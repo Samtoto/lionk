@@ -91,7 +91,7 @@
             // },
             onSubmit(evt) {
                 console.log(this.form)
-                axios.post('/add', this.form).then(response => {
+                axios.post('/blog/add', this.form).then(response => {
                     console.log(response.data);
                     this.form = {};
                     this.showAlert();

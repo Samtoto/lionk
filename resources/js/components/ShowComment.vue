@@ -78,7 +78,7 @@ export default {
         let blog_id = document.querySelector('#blog_id').value;
         this.form.blog_id = blog_id;
         console.log(this.form)
-        axios.get('/showComments/' + blog_id).then(response => {
+        axios.get('/comment/show/' + blog_id).then(response => {
             console.log(response.data);
             this.card = response.data;
             this.treeData = this.card.comment

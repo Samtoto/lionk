@@ -25,7 +25,7 @@
 <script>
 export default {
     mounted: function() {
-        axios.get('/communities/all').then(response => {
+        axios.get('/community/all').then(response => {
             console.log(response.data);
             this.cards = response.data;
         })

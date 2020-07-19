@@ -33,7 +33,7 @@ export default {
     },
     mounted() {
         console.log('mounted');
-        axios.get('/showBlogs').then(response => {
+        axios.get('/blog/all').then(response => {
             console.log(response.data);
             this.cards = response.data;
         });
@@ -41,7 +41,7 @@ export default {
     },
     methods: {
         reply: function(id) {
-            window.location.href="/reply/" + id
+            window.location.href="/blog/show/" + id
         }
     }
 }
