@@ -38,8 +38,8 @@ class BlogController extends Controller
         // $blog = new Blog;
         // $blog->all();
         
-        return response()->json(Blog::limit(50)->with(['user'])->withCount('comment')->get(), 200);
-        // return response()->json(Blog::limit(50)->with(['user', 'community'])->get(), 200);
+        // return response()->json(Blog::limit(50)->with(['user'])->withCount('comment')->get(), 200);
+        return response()->json(Blog::limit(50)->with(['user', 'community'])->withCount('comment')->get(), 200);
     }
 
     public function show (Request $request)

@@ -7,7 +7,9 @@
             >
                 <div>
                     <b-card>
-                        <b-card-title>{{ card.title}} <small style="font-size:60%">Posted by {{card.user.name}} {{card.created_at}} | Community:</small></b-card-title>
+                        <b-card-title>
+                            <small style="font-size:60%">{{ card.community.name ? card.community.name : '' }} • Posted by {{card.user.name}} {{card.created_at}} </small></b-card-title>
+                        <b-card-title>{{ card.title}} </b-card-title>
                         <b-card-text>{{ card.content}}</b-card-text>
                         <!-- <b-link :to="{ path: 'reply', query: { blog_id: card.id } }" class="btn btn-primary">reply</b-link> -->
                         <b-button @click="reply(card.id)"  variant="primary"> {{ card.comment_count }} comments</b-button>
