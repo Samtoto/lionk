@@ -96,6 +96,7 @@ export default {
                 this.card = response.data;
                 this.treeData = this.card.comment
                 this.blogOwner = this.card.user
+                this.form.comment = null
             });
         }
     }
