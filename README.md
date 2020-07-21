@@ -9,6 +9,7 @@ Blogs, Comments, Discuss and Communities
 - edit `.env` with your database info, MySQL or MariaDB recommanded
 - run `php artisan key:generate`
 - run `yarn` or `npm install`
+- run `yarn run dev` or `npm run dev`
 - run `php artisan migrate`
 
 ## Contributing
