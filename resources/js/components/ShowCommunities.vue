@@ -8,8 +8,7 @@
                 <div>
                     <b-card>
                         <b-card-title>{{ card.name}} </b-card-title>
-                        
-                        <b-button @click="join(card.id)"  :variant=" card.joined ? 'success': 'primary' ">{{ card.joined ? 'Joined': 'Join'}}</b-button>
+                        <b-button @click="join(card.id)"  :variant="  card.user.length>0  ? 'success': 'primary' ">{{ card.user.length>0 ? 'Joined': 'Join'}}</b-button>
                         
                     </b-card>
                 </div>
