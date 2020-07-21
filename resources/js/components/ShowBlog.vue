@@ -8,7 +8,13 @@
                 <div>
                     <b-card>
                         <b-card-title>
-                            <small style="font-size:60%">{{ card.community.name ? card.community.name : '' }} • Posted by {{card.user.name}} {{card.created_at}} </small></b-card-title>
+                            <small style="font-size:60%">{{ card.community.name ? card.community.name : '' }} • Posted by {{card.user.name}} {{card.created_at}} 
+                            <b-button
+                                variant="primary"
+                                @click="joinCommunity(card.community.id)"
+                                v-if="card.community.user.length==0"
+                            > Join </b-button>
+                            </small></b-card-title>
                         <b-card-title>{{ card.title}} </b-card-title>
                         <b-card-text>{{ card.content}}</b-card-text>
                         <!-- <b-link :to="{ path: 'reply', query: { blog_id: card.id } }" class="btn btn-primary">reply</b-link> -->
@@ -35,15 +41,25 @@ export default {
     },
     mounted() {
         console.log('mounted');
-        axios.get('/blog/all').then(response => {
-            console.log(response.data);
-            this.cards = response.data;
-        });
+        this.all();
 
     },
     methods: {
         reply: function(id) {
             window.location.href="/blog/show/" + id
+        },
+        joinCommunity: function(community_id) {
+            axios.get('/community/change_status/'+community_id).then(response => {
+                // TODO if joined show joined button
+                // when hover on show leave button
+                this.all();
+            });
+        },
+        all: function() {
+            axios.get('/blog/all').then(response => {
+                console.log(response.data);
+                this.cards = response.data;
+            });
         }
     }
 }
