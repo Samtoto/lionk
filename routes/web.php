@@ -29,6 +29,7 @@ Route::prefix('blog')->group(function () {
 Route::prefix('comment')->group(function () {
     Route::get('/show/{blog_id}', 'CommentController@show')->where(['blog_id' => '[0-9]+']);
     Route::post('/add', 'CommentController@add');
+    Route::post('/add_sub', 'CommentController@addSub');
 });
 
 Route::prefix('community')->group(function () {

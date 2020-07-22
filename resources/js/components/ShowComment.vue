@@ -21,11 +21,11 @@
                             v-model = "form.comment"
                         ></b-form-textarea>
                         
-                    <b-button block variant="outline-primary" @click="reply">reply</b-button>
+                    <b-button block variant="outline-primary" @click="reply">Comment</b-button>
                     </b-card>
                     
                     <ul style="list-style: none;">
-                        <tree-item v-for="(comment, index) in treeData" :key="index" :comment="comment"></tree-item>
+                        <tree-item v-for="(comment, index) in treeData" :key="index" :comment="comment" @reply-comment="replyComment"></tree-item>
                     </ul>
                 </div>
                 
@@ -49,17 +49,40 @@ Vue.component('tree-item', {
             content: {{ comment.content }} <br />
             
             parent_id:{{ comment.parent_id ? comment.parent_id : 'null' }} <br />
-            reply button: <b-button>reply</b-button> <br />
+            reply button: <b-button size="sm" @click="toggle">reply</b-button> <br />
+            <b-form
+                v-show="isOpen"
+            >
+            <b-form-textarea
+                placeholder="Enter ur comment..."
+                rows="3"
+                max-rows="6"
+                v-model="content"
+            ></b-form-textarea>
+            <b-button variant="outline-info" @click="$emit('reply-comment', comment, content)" size="sm">Comment</b-button>
+            </b-form>
         </b-card-text>
         </b-card>
         <ul style="list-style: none;" v-if="comment.all_children.length">
-            <tree-item v-for="(comment, index) in comment.all_children" :key="index" :comment="comment">
+            <tree-item v-for="(comment, index) in comment.all_children" :key="index" :comment="comment" @reply-comment="$emit('reply-comment', comment, content)">
             </tree-item>
         </ul>
     </li>`,
     props: {
-        comment: Object
+        comment: Object,
     },
+    data: function () {
+        return {
+            isOpen: false,
+            content: '',
+        }
+    },
+    methods: {
+        toggle: function() {
+            this.isOpen = !this.isOpen;
+            
+        }
+    }
 })
 
 export default {
@@ -98,6 +121,17 @@ export default {
                 this.blogOwner = this.card.user
                 this.form.comment = null
             });
+        },
+        replyComment: function(parentComment, content) {
+            let subCommentData = {
+                comment_id: parentComment.id,
+                comment: content,
+                blog_id: this.form.blog_id,
+            };
+            axios.post('/comment/add_sub', subCommentData).then(response => {
+                // console.log(response.data);
+                parentComment.all_children.push(response.data);
+            })
         }
     }
 }
