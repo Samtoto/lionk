@@ -25,7 +25,7 @@
                     </b-card>
                     
                     <ul style="list-style: none;">
-                        <tree-item v-for="(comment, index) in treeData" :key="index" :comment="comment" @reply-comment="replyComment"></tree-item>
+                        <tree-item v-for="(comment, index) in treeData" :key="index" :comment="comment"></tree-item>
                     </ul>
                 </div>
                 
@@ -39,6 +39,48 @@
 </template>
 
 <script>
+const bus = new Vue({});
+var Reply = Vue.component('Reply', {
+    template: `<b-form>
+        <b-form-textarea
+            placeholder="Enter ur comment..."
+            rows="3"
+            max-rows="6"
+            v-model="content"
+        ></b-form-textarea>
+        <b-button variant="outline-info" @click="submit" size="sm">Comment</b-button>
+        </b-form>`,
+    methods: {
+        submit: function () {
+            console.log('submit Reply', this.content, this.parent_id)
+            let subComment = {
+                comment_id: this.parent_id,
+                blog_id: document.querySelector('#blog_id').value,
+                comment: this.content
+            }
+            let newComment = {}
+            axios.post('/comment/add_sub', subComment).then(response => {
+                // console.log(response.data);
+                newComment = response.data
+                bus.$emit("comment-bus", newComment)
+                this.content = ''
+                this.$emit('toggle')
+            })
+
+            
+        }
+    },
+    mounted () {},
+    data () {
+        return {
+            content: ''
+        }
+    },
+    props: {
+        parent_id: Number
+    }
+})
+
 Vue.component('tree-item', {
     template: `
     <li style="border-left:5px solid gray">
@@ -50,20 +92,12 @@ Vue.component('tree-item', {
             
             parent_id:{{ comment.parent_id ? comment.parent_id : 'null' }} <br />
             reply button: <b-button size="sm" @click="toggle">reply</b-button> <br />
-            <b-form
-                v-show="isOpen"
-            >
-            <b-form-textarea
-                placeholder="Enter ur comment..."
-                rows="3"
-                max-rows="6"
-                v-model="content"
-            ></b-form-textarea>
-            <b-button variant="outline-info" @click="$emit('reply-comment', comment, content)" size="sm">Comment</b-button>
-            </b-form>
+            
+            <Reply @toggle="toggle" v-show="isOpen" :parent_id="comment.id"> </Reply>
+
         </b-card-text>
         </b-card>
-        <ul style="list-style: none;" v-if="comment.all_children.length">
+        <ul style="list-style: none;" v-if="comment.all_children">
             <tree-item v-for="(comment, index) in comment.all_children" :key="index" :comment="comment" @reply-comment="$emit('reply-comment', comment, content)">
             </tree-item>
         </ul>
@@ -100,13 +134,12 @@ export default {
     mounted() {
         let blog_id = document.querySelector('#blog_id').value;
         this.form.blog_id = blog_id;
-        console.log(this.form)
         axios.get('/comment/show/' + blog_id).then(response => {
-            console.log(response.data);
+            // console.log(response.data);
             this.card = response.data;
             this.treeData = this.card.comment
             this.blogOwner = this.card.user
-            console.log(this.treeData)
+            // console.log(this.treeData)
             // console.error(this.card.user.name)
             // this.cards = response.data;
         });
@@ -122,18 +155,42 @@ export default {
                 this.form.comment = null
             });
         },
-        replyComment: function(parentComment, content) {
-            let subCommentData = {
-                comment_id: parentComment.id,
-                comment: content,
-                blog_id: this.form.blog_id,
-            };
-            axios.post('/comment/add_sub', subCommentData).then(response => {
-                // console.log(response.data);
-                parentComment.all_children.push(response.data);
-            })
+        addChild(newComment, comments) {
+            if (comments.length == 0) {
+                    return;
+            }
+            // console.log(comments);
+            // return;
+            for (var comment of comments) {
+                
+                if (comment.id == newComment.parent_id) {
+                    console.log('found it')
+                    if (comment.hasOwnProperty('all_children')) {
+                        comment.all_children.push(newComment)
+                    } else {
+                        comment.all_children = [newComment]
+                    }
+                    return;
+                }
+                if (comment.hasOwnProperty('all_children')) {
+                    this.addChild(newComment, comment.all_children)
+                } else {
+                    return;
+                }
+            }
+        },
+        addComment: function (newComment) {
+            // console.log(this.card.comment)
+            this.addChild(newComment, this.card.comment)
+            // console.log('submit with busEvent', newComment)
         }
-    }
+    },
+    created () {
+        bus.$on('comment-bus', this.addComment)
+    },
+    destoryed () {
+        bus.$off('comment-bus', this.addComment)
+    },
 }
 
 </script>
