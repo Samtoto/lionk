@@ -52,8 +52,3 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/my/config', 'UserInfoController@config');
-
-
-Route::get('/test', function() {
-    return view('test');
-});
