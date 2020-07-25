@@ -35,7 +35,7 @@ Route::prefix('comment')->group(function () {
 Route::prefix('community')->group(function () {
     Route::get('/', function () {
         return view('communities');
-    });
+    })->name('communities');
 
     Route::get('/change_status/{community_id}', 'CommunityController@changeStatus')->where(['community_id', '[0-9]+']);
     Route::get('/all', 'CommunityController@all');
@@ -45,7 +45,7 @@ Route::prefix('community')->group(function () {
 
 Route::get('/', function() {
     return view('show');
-});
+})->name('blog');
 
 Auth::routes();
 
