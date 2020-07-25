@@ -44,7 +44,7 @@ class CommentController extends Controller
         $comment->blog_id = $request->blog_id;
         $comment->save();
 
-        $comment = Comment::where('id', $comment->id)->with(['allChildren', 'user'])->get();
+        $comment = Comment::where('id', $comment->id)->with(['allChildren'])->get();
 
         return response()->json($comment[0], 200);
         // return $this->show($request);
