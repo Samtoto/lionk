@@ -33,7 +33,7 @@ class Comment extends Model
 
     public function allChildren()
     {
-        return $this->child()->with('allChildren');
+        return $this->child()->with(['allChildren', 'user']);
     }
 
     // public function comments()
