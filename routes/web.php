@@ -45,7 +45,7 @@ Route::prefix('community')->group(function () {
 
 Route::get('/', function() {
     return view('show');
-})->name('blog');
+})->name('blogs');
 
 Auth::routes();
 
