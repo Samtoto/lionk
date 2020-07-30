@@ -8,18 +8,27 @@
                     <b-card>
                         <!-- prevent error alike https://stackoverflow.com/questions/52751705/vue-warning-when-accessing-nested-object -->
                         <b-card-title>{{ card.title }} <small>Posted by {{ card.user ? card.user.name : '' }} {{card.created_at}}</small></b-card-title>
-                        <b-card-text>{{ card.content}}</b-card-text>
+                        <b-card-text v-html="marked(card.content?card.content:'')"></b-card-text>
                         <!-- <b-button>reply</b-button> -->
                         <!-- <textarea></textarea> -->
 
-                        <p>Comment as sam</p>
-                        <b-form-textarea
-                            id="content"
-                            placeholder="Enter ur comment..."
-                            rows="3"
-                            max-rows="6"
-                            v-model = "form.comment"
-                        ></b-form-textarea>
+                        <p>Comment as ???</p>
+                        <b-card no-body>
+                            <b-tabs card>
+                                <b-tab title="Edit" active>
+                                    <b-form-textarea
+                                        id="content"
+                                        v-model.trim="form.comment"
+                                        placeholder="Enter something..."
+                                        rows="3"
+                                        max-rows="6"
+                                    ></b-form-textarea>
+                                </b-tab>
+                                <b-tab title="Preview">
+                                    <b-card-text v-html="marked(form.comment?form.comment:'')"></b-card-text>
+                                </b-tab>
+                            </b-tabs>
+                        </b-card>
                         
                     <b-button block variant="outline-primary" @click="reply">Comment</b-button>
                     </b-card>
@@ -68,18 +77,17 @@ var Reply = Vue.component('Reply', {
     template: `<b-form>
         <b-card no-body>
             <b-tabs card>
-            <b-tab title="Edit" active>
-                <b-form-textarea
-                id="content"
-                v-model.trim="content"
-                placeholder="Enter something..."
-                rows="3"
-                max-rows="6"
-                ></b-form-textarea>
-            </b-tab>
-            <b-tab title="Preview">
-                <b-card-text v-html="marked(content)"></b-card-text>
-            </b-tab>
+                <b-tab title="Edit" active>
+                    <b-form-textarea
+                    v-model.trim="content"
+                    placeholder="Enter something..."
+                    rows="3"
+                    max-rows="6"
+                    ></b-form-textarea>
+                </b-tab>
+                <b-tab title="Preview">
+                    <b-card-text v-html="marked(content)"></b-card-text>
+                </b-tab>
             </b-tabs>
         </b-card>
         <b-button variant="outline-info" @click="submit" size="sm">Comment</b-button>
@@ -118,18 +126,19 @@ var Reply = Vue.component('Reply', {
 
 Vue.component('tree-item', {
     template: `
-    <li style="border-left:5px solid gray">
-        <b-card>
+    <li style="">
+        <b-card border-variant="light">
+        <b-card-text></b-card-text>
+        <b-card-text v-html="marked(comment.content)">
+        </b-card-text>
         <b-card-text>
-            <small>user: {{ comment.user ? comment.user.name : '' }}</small> <br />
-            id: {{ comment.id }} <br/>
-            content: {{ comment.content }} <br />
-            
-            parent_id:{{ comment.parent_id ? comment.parent_id : 'null' }} <br />
-            reply button: <b-button size="sm" @click="toggle">reply</b-button> <br />
-            
-            <Reply @toggle="toggle" v-show="isOpen" :parent_id="comment.id"> </Reply>
-
+            <small>
+                <b-button size="sm">id: {{ comment.id }}</b-button>
+                <b-button size="sm">{{ comment.user ? comment.user.name : '' }}</b-button>
+                <b-button size="sm">parent_id: {{ comment.parent_id ? comment.parent_id : 'null' }}</b-button>
+                <b-button size="sm" @click="toggle" variant="primary">reply</b-button>
+                <Reply @toggle="toggle" v-show="isOpen" :parent_id="comment.id"> </Reply>
+            </small>
         </b-card-text>
         </b-card>
         <ul style="list-style: none;" v-if="comment.all_children">
@@ -144,6 +153,7 @@ Vue.component('tree-item', {
         return {
             isOpen: false,
             content: '',
+            marked: marked
         }
     },
     methods: {
@@ -160,10 +170,11 @@ export default {
             card: {},
             treeData: {},
             form: {
-                comment: null,
+                comment: '',
                 blog_id: null,
                 commet_id: null,
-            }
+            },
+            marked: marked
         }
     },
     mounted() {

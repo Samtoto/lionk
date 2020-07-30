@@ -47,7 +47,7 @@
                             ></b-form-textarea>
                         </b-tab>
                         <b-tab title="Preview">
-                            <b-card-text v-html="marked(form.content)"></b-card-text>
+                            <b-card-text v-html="marked(form.content?form.content:'')"></b-card-text>
                         </b-tab>
                         </b-tabs>
                     </b-card>
