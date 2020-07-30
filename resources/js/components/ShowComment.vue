@@ -39,15 +39,49 @@
 </template>
 
 <script>
+import marked from 'marked';
+import hljs from 'highlight.js';
+import "highlight.js/styles/tomorrow-night.css";
+
+
+// init marked
+marked.setOptions({
+    renderer: new marked.Renderer(),
+    highlight: function(code, language) {
+        // console.log(code, language)
+        // const hljs = require('highlight.js');
+        const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
+        // console.log(hljs.highlight(validLanguage, code).value);
+        return hljs.highlight(validLanguage, code).value;
+    },
+    pedantic: false,
+    gfm: true,
+    breaks: true,
+    sanitize: false,
+    smartLists: true,
+    smartypants: false,
+    xhtml: true
+})
+
 const bus = new Vue({});
 var Reply = Vue.component('Reply', {
     template: `<b-form>
-        <b-form-textarea
-            placeholder="Enter ur comment..."
-            rows="3"
-            max-rows="6"
-            v-model="content"
-        ></b-form-textarea>
+        <b-card no-body>
+            <b-tabs card>
+            <b-tab title="Edit" active>
+                <b-form-textarea
+                id="content"
+                v-model.trim="content"
+                placeholder="Enter something..."
+                rows="3"
+                max-rows="6"
+                ></b-form-textarea>
+            </b-tab>
+            <b-tab title="Preview">
+                <b-card-text v-html="marked(content)"></b-card-text>
+            </b-tab>
+            </b-tabs>
+        </b-card>
         <b-button variant="outline-info" @click="submit" size="sm">Comment</b-button>
         </b-form>`,
     methods: {
@@ -73,7 +107,8 @@ var Reply = Vue.component('Reply', {
     mounted () {},
     data () {
         return {
-            content: ''
+            content: '',
+            marked: marked
         }
     },
     props: {
