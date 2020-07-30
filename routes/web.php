@@ -29,12 +29,13 @@ Route::prefix('blog')->group(function () {
 Route::prefix('comment')->group(function () {
     Route::get('/show/{blog_id}', 'CommentController@show')->where(['blog_id' => '[0-9]+']);
     Route::post('/add', 'CommentController@add');
+    Route::post('/add_sub', 'CommentController@addSub');
 });
 
 Route::prefix('community')->group(function () {
     Route::get('/', function () {
         return view('communities');
-    });
+    })->name('communities');
 
     Route::get('/change_status/{community_id}', 'CommunityController@changeStatus')->where(['community_id', '[0-9]+']);
     Route::get('/all', 'CommunityController@all');
@@ -44,15 +45,10 @@ Route::prefix('community')->group(function () {
 
 Route::get('/', function() {
     return view('show');
-});
+})->name('blogs');
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/my/config', 'UserInfoController@config');
-
-
-Route::get('/test', function() {
-    return view('test');
-});

@@ -8,20 +8,29 @@
                     <b-card>
                         <!-- prevent error alike https://stackoverflow.com/questions/52751705/vue-warning-when-accessing-nested-object -->
                         <b-card-title>{{ card.title }} <small>Posted by {{ card.user ? card.user.name : '' }} {{card.created_at}}</small></b-card-title>
-                        <b-card-text>{{ card.content}}</b-card-text>
+                        <b-card-text v-html="marked(card.content?card.content:'')"></b-card-text>
                         <!-- <b-button>reply</b-button> -->
                         <!-- <textarea></textarea> -->
 
-                        <p>Comment as sam</p>
-                        <b-form-textarea
-                            id="content"
-                            placeholder="Enter ur comment..."
-                            rows="3"
-                            max-rows="6"
-                            v-model = "form.comment"
-                        ></b-form-textarea>
+                        <p>Comment as ???</p>
+                        <b-card no-body>
+                            <b-tabs card>
+                                <b-tab title="Edit" active>
+                                    <b-form-textarea
+                                        id="content"
+                                        v-model.trim="form.comment"
+                                        placeholder="Enter something..."
+                                        rows="3"
+                                        max-rows="6"
+                                    ></b-form-textarea>
+                                </b-tab>
+                                <b-tab title="Preview">
+                                    <b-card-text v-html="marked(form.comment?form.comment:'')"></b-card-text>
+                                </b-tab>
+                            </b-tabs>
+                        </b-card>
                         
-                    <b-button block variant="outline-primary" @click="reply">reply</b-button>
+                    <b-button block variant="outline-primary" @click="reply">Comment</b-button>
                     </b-card>
                     
                     <ul style="list-style: none;">
@@ -39,27 +48,120 @@
 </template>
 
 <script>
+import marked from 'marked';
+import hljs from 'highlight.js';
+import "highlight.js/styles/tomorrow-night.css";
+
+
+// init marked
+marked.setOptions({
+    renderer: new marked.Renderer(),
+    highlight: function(code, language) {
+        // console.log(code, language)
+        // const hljs = require('highlight.js');
+        const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
+        // console.log(hljs.highlight(validLanguage, code).value);
+        return hljs.highlight(validLanguage, code).value;
+    },
+    pedantic: false,
+    gfm: true,
+    breaks: true,
+    sanitize: false,
+    smartLists: true,
+    smartypants: false,
+    xhtml: true
+})
+
+const bus = new Vue({});
+var Reply = Vue.component('Reply', {
+    template: `<b-form>
+        <b-card no-body>
+            <b-tabs card>
+                <b-tab title="Edit" active>
+                    <b-form-textarea
+                    v-model.trim="content"
+                    placeholder="Enter something..."
+                    rows="3"
+                    max-rows="6"
+                    ></b-form-textarea>
+                </b-tab>
+                <b-tab title="Preview">
+                    <b-card-text v-html="marked(content)"></b-card-text>
+                </b-tab>
+            </b-tabs>
+        </b-card>
+        <b-button variant="outline-info" @click="submit" size="sm">Comment</b-button>
+        </b-form>`,
+    methods: {
+        submit: function () {
+            console.log('submit Reply', this.content, this.parent_id)
+            let subComment = {
+                comment_id: this.parent_id,
+                blog_id: document.querySelector('#blog_id').value,
+                comment: this.content
+            }
+            let newComment = {}
+            axios.post('/comment/add_sub', subComment).then(response => {
+                // console.log(response.data);
+                newComment = response.data
+                bus.$emit("comment-bus", newComment)
+                this.content = ''
+                this.$emit('toggle')
+            })
+
+            
+        }
+    },
+    mounted () {},
+    data () {
+        return {
+            content: '',
+            marked: marked
+        }
+    },
+    props: {
+        parent_id: Number
+    }
+})
+
 Vue.component('tree-item', {
     template: `
-    <li style="border-left:5px solid gray">
-        <b-card>
+    <li style="">
+        <b-card border-variant="light">
+        <b-card-text></b-card-text>
+        <b-card-text v-html="marked(comment.content)">
+        </b-card-text>
         <b-card-text>
-            <small>user: {{ comment.user ? comment.user.name : '' }}</small> <br />
-            id: {{ comment.id }} <br/>
-            content: {{ comment.content }} <br />
-            
-            parent_id:{{ comment.parent_id ? comment.parent_id : 'null' }} <br />
-            reply button: <b-button>reply</b-button> <br />
+            <small>
+                <b-button size="sm">id: {{ comment.id }}</b-button>
+                <b-button size="sm">{{ comment.user ? comment.user.name : '' }}</b-button>
+                <b-button size="sm">parent_id: {{ comment.parent_id ? comment.parent_id : 'null' }}</b-button>
+                <b-button size="sm" @click="toggle" variant="primary">reply</b-button>
+                <Reply @toggle="toggle" v-show="isOpen" :parent_id="comment.id"> </Reply>
+            </small>
         </b-card-text>
         </b-card>
-        <ul style="list-style: none;" v-if="comment.all_children.length">
-            <tree-item v-for="(comment, index) in comment.all_children" :key="index" :comment="comment">
+        <ul style="list-style: none;" v-if="comment.all_children">
+            <tree-item v-for="(comment, index) in comment.all_children" :key="index" :comment="comment" @reply-comment="$emit('reply-comment', comment, content)">
             </tree-item>
         </ul>
     </li>`,
     props: {
-        comment: Object
+        comment: Object,
     },
+    data: function () {
+        return {
+            isOpen: false,
+            content: '',
+            marked: marked
+        }
+    },
+    methods: {
+        toggle: function() {
+            this.isOpen = !this.isOpen;
+            
+        }
+    }
 })
 
 export default {
@@ -68,22 +170,22 @@ export default {
             card: {},
             treeData: {},
             form: {
-                comment: null,
+                comment: '',
                 blog_id: null,
                 commet_id: null,
-            }
+            },
+            marked: marked
         }
     },
     mounted() {
         let blog_id = document.querySelector('#blog_id').value;
         this.form.blog_id = blog_id;
-        console.log(this.form)
         axios.get('/comment/show/' + blog_id).then(response => {
-            console.log(response.data);
+            // console.log(response.data);
             this.card = response.data;
             this.treeData = this.card.comment
             this.blogOwner = this.card.user
-            console.log(this.treeData)
+            // console.log(this.treeData)
             // console.error(this.card.user.name)
             // this.cards = response.data;
         });
@@ -96,9 +198,45 @@ export default {
                 this.card = response.data;
                 this.treeData = this.card.comment
                 this.blogOwner = this.card.user
+                this.form.comment = null
             });
+        },
+        addChild(newComment, comments) {
+            if (comments.length == 0) {
+                    return;
+            }
+            // console.log(comments);
+            // return;
+            for (var comment of comments) {
+                
+                if (comment.id == newComment.parent_id) {
+                    console.log('found it')
+                    if (comment.hasOwnProperty('all_children')) {
+                        comment.all_children.push(newComment)
+                    } else {
+                        comment.all_children = [newComment]
+                    }
+                    return;
+                }
+                if (comment.hasOwnProperty('all_children')) {
+                    this.addChild(newComment, comment.all_children)
+                } else {
+                    return;
+                }
+            }
+        },
+        addComment: function (newComment) {
+            // console.log(this.card.comment)
+            this.addChild(newComment, this.card.comment)
+            // console.log('submit with busEvent', newComment)
         }
-    }
+    },
+    created () {
+        bus.$on('comment-bus', this.addComment)
+    },
+    destoryed () {
+        bus.$off('comment-bus', this.addComment)
+    },
 }
 
 </script>

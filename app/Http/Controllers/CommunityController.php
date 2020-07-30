@@ -31,19 +31,13 @@ class CommunityController extends Controller
     public function all(Request $request)
     {
         $user = $request->user();
-        $communities = Community::all();
-        $joinedCommunities = $user->where('id', $user->id)->limit(1)->with('community')->get()[0]->community;
-        // dump($user->where('id', $user->id)->with('community')->get()->toJson(JSON_PRETTY_PRINT));
-
-        // dump($joinedCommunities->pluck('id')->all());
-        foreach ($communities as $community) {
-            if (in_array($community->id, $joinedCommunities->pluck('id')->all())) {
-                $community->joined = true;
-            } else {
-                $community->joined = false;
-            }
-        }
-
+        // get all communities
+        // and with user relation
+        $communities = Community::with(['user'=> function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        }])->get();
+        
+        \Debugbar::info($communities->toArray());
         // dump($communities->toJson(JSON_PRETTY_PRINT));
         return response()->json($communities, 200);
     }

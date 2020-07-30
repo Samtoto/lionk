@@ -31,9 +31,24 @@ class CommentController extends Controller
         $comment->content = $request->comment;
         $comment->blog_id = $request->blog_id;
         $comment->save();
+        // TODO should return the success one
         return $this->show($request);
     }
 
+    public function addSub(Request $request)
+    {
+        $comment = new Comment;
+        $comment->user_id = $request->user()->id;
+        $comment->parent_id = $request->comment_id;
+        $comment->content = $request->comment;
+        $comment->blog_id = $request->blog_id;
+        $comment->save();
+
+        $comment = Comment::where('id', $comment->id)->with(['allChildren'])->get();
+
+        return response()->json($comment[0], 200);
+        // return $this->show($request);
+    }
     // public function add(Request $request)
     // {
         

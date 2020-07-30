@@ -34,12 +34,42 @@ class BlogController extends Controller
         return response()->json($request->input(), 200);
     }
 
-    public function all() {
-        // $blog = new Blog;
-        // $blog->all();
-        
-        return response()->json(Blog::limit(50)->with(['user'])->withCount('comment')->get(), 200);
-        // return response()->json(Blog::limit(50)->with(['user', 'community'])->get(), 200);
+    public function all(Request $request) {
+        $user = $request->user();
+        // get all blogs with users and communities
+        // return:
+        // ["id" => 13
+        //   "title" => "test Community"
+        //   "content" => "test Community add blog"
+        //   "user_id" => 1
+        //   "community_id" => 52
+        //   "comment_count" => 5
+        //   "user" => array:6 []
+        //   "community" => array:6 [
+        //     "id" => 52
+        //     "name" => "Futurology"
+        //     "user" => array:1 [
+        //       0 => array:7 [
+        //         "id" => 1
+        //         "name" => "Sam"
+        //         "pivot" => array:2 [
+        //           "community_id" => 52
+        //           "user_id" => 1
+        //         ]
+        //       ]
+        //     ]
+        //   ]
+        // ]
+        $blogs = Blog::limit(50)->with(['user', 'community'=> function ($query) use ($user) {
+            // get the communities  and  its joined status with the request user joined
+            $query->with(['user' => function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            }]);
+        }])->withCount('comment')->get();
+
+        \Debugbar::info($blogs[0]->toArray());
+
+        return response()->json($blogs, 200);
     }
 
     public function show (Request $request)
