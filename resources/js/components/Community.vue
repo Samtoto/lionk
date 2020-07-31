@@ -1,8 +1,8 @@
 <template>
     <b-container fluid>
         <b-row class="d-flex justify-content-center">
-            <b-col cols="6" md="6" class="px-1">
-                <b-row class="py-1" 
+            <b-col cols="6" md="6" class="px-1" >
+                <b-row class="py-1"
                     v-for="card in cards" :key="card.id"
                 >
                         <b-card style="width:100%">
@@ -25,33 +25,15 @@
             <b-col md="3" class="px-5">
                 <b-row class="py-1">
                     <b-card style="width:100%">
-                        <b-card-title>Top communities</b-card-title>
-                        <b-card-text><p>This is a list of communities</p></b-card-text>
+                        <b-card-title>About community</b-card-title>
+                        <b-card-text><p>Some text</p></b-card-text>
                     </b-card>
-                    
                 </b-row>
                 <b-row class="py-1">
                     <b-card style="width:100%">
-                        <b-card-title>Treading communities</b-card-title>
-                        <b-card-text><p>This is a list of communities</p></b-card-text>
+                        <b-card-title>Community rules</b-card-title>
+                        <b-card-text><p>Some text</p></b-card-text>
                     </b-card>
-                    
-                </b-row>
-
-                <b-row class="py-1">
-                    <b-card style="width:100%">
-                        <b-card-title>Home</b-card-title>
-                        <b-card-text><p>Post & Create community</p></b-card-text>
-                    </b-card>
-                    
-                </b-row>
-
-                <b-row class="py-1">
-                    <b-card style="width:100%">
-                        <b-card-title>Top or recent blogs</b-card-title>
-                        <b-card-text><p>List of blogs</p></b-card-text>
-                    </b-card>
-                    
                 </b-row>
             </b-col>
 
@@ -89,16 +71,13 @@ marked.setOptions({
 export default {
     data() {
         return {
-            cards: {
-
-            },
+            cards: {},
             marked: marked
         }
     },
     mounted() {
         console.log('mounted');
         this.all();
-
     },
     methods: {
         reply: function(id) {
@@ -113,7 +92,7 @@ export default {
         },
         all: function() {
             axios.get('/blog/all').then(response => {
-                console.log(response.data);
+                // console.log(response.data);
                 this.cards = response.data;
             });
         }

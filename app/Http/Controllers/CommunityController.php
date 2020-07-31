@@ -51,4 +51,9 @@ class CommunityController extends Controller
         // dump($user->toJson(JSON_PRETTY_PRINT));
     }
 
+    public function show(Request $request)
+    {
+        return view('community');
+    }
+
 }
