@@ -1,46 +1,53 @@
 <template>
-
     <b-container fluid>
-        <b-row  align-h="center">
+        <b-row class="d-flex justify-content-center">
+            <b-col cols="6" md="6" class="px-1">
+                <b-card style="width:100%">
+                    <!-- prevent error alike https://stackoverflow.com/questions/52751705/vue-warning-when-accessing-nested-object -->
+                    <b-card-title>{{ card.title }} <small>Posted by {{ card.user ? card.user.name : '' }} {{card.created_at}}</small></b-card-title>
+                    <b-card-text v-html="marked(card.content?card.content:'')"></b-card-text>
+                    <!-- <b-button>reply</b-button> -->
+                    <!-- <textarea></textarea> -->
 
-            <b-col cols="1" md="9" class="py-3">
-                <div>
-                    <b-card>
-                        <!-- prevent error alike https://stackoverflow.com/questions/52751705/vue-warning-when-accessing-nested-object -->
-                        <b-card-title>{{ card.title }} <small>Posted by {{ card.user ? card.user.name : '' }} {{card.created_at}}</small></b-card-title>
-                        <b-card-text v-html="marked(card.content?card.content:'')"></b-card-text>
-                        <!-- <b-button>reply</b-button> -->
-                        <!-- <textarea></textarea> -->
+                    <p>Comment as ???</p>
+                    <b-card no-body>
+                        <b-tabs card>
+                            <b-tab title="Edit" active>
+                                <b-form-textarea
+                                    id="content"
+                                    v-model.trim="form.comment"
+                                    placeholder="Enter something..."
+                                    rows="3"
+                                    max-rows="6"
+                                ></b-form-textarea>
+                            </b-tab>
+                            <b-tab title="Preview">
+                                <b-card-text v-html="marked(form.comment?form.comment:'')"></b-card-text>
+                            </b-tab>
+                        </b-tabs>
+                    </b-card>
 
-                        <p>Comment as ???</p>
-                        <b-card no-body>
-                            <b-tabs card>
-                                <b-tab title="Edit" active>
-                                    <b-form-textarea
-                                        id="content"
-                                        v-model.trim="form.comment"
-                                        placeholder="Enter something..."
-                                        rows="3"
-                                        max-rows="6"
-                                    ></b-form-textarea>
-                                </b-tab>
-                                <b-tab title="Preview">
-                                    <b-card-text v-html="marked(form.comment?form.comment:'')"></b-card-text>
-                                </b-tab>
-                            </b-tabs>
-                        </b-card>
-                        
                     <b-button block variant="outline-primary" @click="reply">Comment</b-button>
                     </b-card>
-                    
-                    <ul style="list-style: none;">
+
+                    <ul style="list-style: none; background:#fff">
                         <tree-item v-for="(comment, index) in treeData" :key="index" :comment="comment"></tree-item>
                     </ul>
-                </div>
-                
             </b-col>
-
-            
+            <b-col md="3" class="px-5">
+                <b-row class="py-1">
+                    <b-card style="width:100%">
+                        <b-card-title>About community</b-card-title>
+                        <b-card-text><p>Some text</p></b-card-text>
+                    </b-card>
+                </b-row>
+                <b-row class="py-1">
+                    <b-card style="width:100%">
+                        <b-card-title>Community rules</b-card-title>
+                        <b-card-text><p>Some text</p></b-card-text>
+                    </b-card>
+                </b-row>
+            </b-col>
         </b-row>
         
     </b-container>

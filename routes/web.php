@@ -40,6 +40,7 @@ Route::prefix('community')->group(function () {
     Route::get('/change_status/{community_id}', 'CommunityController@changeStatus')->where(['community_id', '[0-9]+']);
     Route::get('/all', 'CommunityController@all');
     Route::get('/my', 'CommunityController@my');
+    Route::get('/{community_id}', 'CommunityController@show')->where(['community_id', '[0-9]+']);
 });
 
 

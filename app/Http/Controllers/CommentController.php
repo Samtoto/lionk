@@ -10,6 +10,7 @@ use App\Blog;
 use App\Community;
 
 use Illuminate\Database\Eloquent\Collection;
+use Mews\Purifier\Facades\Purifier;
 
 class CommentController extends Controller
 {
@@ -28,7 +29,7 @@ class CommentController extends Controller
         $comment = new Comment;
         $comment->user_id = $request->user()->id;
         $comment->parent_id = $request->comment_id;
-        $comment->content = $request->comment;
+        $comment->content = Purifier::clean($request->comment);
         $comment->blog_id = $request->blog_id;
         $comment->save();
         // TODO should return the success one
@@ -40,7 +41,7 @@ class CommentController extends Controller
         $comment = new Comment;
         $comment->user_id = $request->user()->id;
         $comment->parent_id = $request->comment_id;
-        $comment->content = $request->comment;
+        $comment->content = Purifier::clean($request->comment);
         $comment->blog_id = $request->blog_id;
         $comment->save();
 

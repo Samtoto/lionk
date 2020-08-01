@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Blog;
 use App\User;
+use Mews\Purifier\Facades\Purifier;
 
 class BlogController extends Controller
 {
@@ -24,7 +25,8 @@ class BlogController extends Controller
         $blog = new Blog;
 
         $blog->title = $request->title;
-        $blog->content = $request->content;
+
+        $blog->content = Purifier::clean($request->content);
         $blog->community_id = $request->community;
         // $blog->save();
         $user->blog()->save($blog);
