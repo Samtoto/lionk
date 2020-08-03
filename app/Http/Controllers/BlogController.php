@@ -16,7 +16,7 @@ class BlogController extends Controller
         $validatedData = $request->validate([
             // 'title' => 'required|unique:posts|max:255',
             'title' => 'bail|required|max:255',
-            'content' => 'required',
+            // 'content' => 'required',
             'community' => 'required',
         ]);
         \Debugbar::info('request data validated');
