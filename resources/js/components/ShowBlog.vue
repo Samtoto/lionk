@@ -4,7 +4,7 @@
             
             <b-col cols="6" md="6" class="px-1">
                 <b-row class="pb-3 pt-1">
-                    <b-input-group>
+                    <b-input-group size="lg">
                         <b-form-input @click="add"></b-form-input>
                         <b-input-group-append>
                             <b-button  variant="outline-secondary"><b-icon icon="card-image" ></b-icon></b-button>
