@@ -36,6 +36,48 @@ class BlogController extends Controller
         return response()->json($request->input(), 200);
     }
 
+    /**
+     * Add img tab
+     *
+     * @param Request $request
+     * @return json
+     */
+    public function addImg(Request $request)
+    {
+        \Debugbar::info($request->input());
+
+        $validatedData = $request->validate([
+            // 'title' => 'required|unique:posts|max:255',
+            'title_img' => 'bail|required|max:255',
+            // 'content' => 'required',
+            'image' => 'image',
+            'community' => 'required',
+        ]);
+        \Debugbar::info('request data validated');
+        // return $request->input('title');
+        $user = $request->user();
+        $blog = new Blog;
+
+        $blog->title = $request->title_img;
+
+        // $blog->content = Purifier::clean($request->content);
+        $path = $request->file('image')->store('images', 'public_uploads');
+        \Debugbar::info($path);
+        /* get img src */
+        // $filePath = Storage::disk('public_uploads')->url($path);
+        // \Debugbar::info($filePath);
+
+        $blog->img_path = $path;
+
+        $blog->community_id = $request->community;
+        // $blog->save();
+        $user->blog()->save($blog);
+
+        \Debugbar::info('blog saved' . $blog);
+
+        return response()->json($request->input(), 200);
+    }
+
     public function all(Request $request) {
         $user = $request->user();
         // get all blogs with users and communities

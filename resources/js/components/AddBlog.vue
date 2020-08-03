@@ -82,8 +82,8 @@
                                     label-cols-sm="2"
                                     label-cols-lg="2"
                                 >
-                                    <b-form-input id="title" type="text" v-model.trim="form.title_img"/>
-                                    <div v-if="errors && errors.title" class="text-danger">{{ errors.title[0] }}</div>
+                                    <b-form-input type="text" v-model.trim="form.title_img"/>
+                                    <div v-if="errors && errors.title_img" class="text-danger">{{ errors.title_img[0] }}</div>
                                 </b-form-group>
                                 <b-form-group
                                     label="Image"
@@ -98,6 +98,7 @@
                                         drop-placeholder="Drop file here..."
                                     >
                                     </b-form-file>
+                                    <div v-if="errors && errors.image" class="text-danger">{{ errors.image[0] }}</div>
                                 </b-form-group>
 
                                 <b-form-group>
@@ -204,6 +205,30 @@
             onImageSubmit(evt) {
                 this.form.title = '';
                 this.form.content = '';
+                let headers = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                }
+                let formData = new FormData();
+                formData.append('title_img', this.form.title_img);
+                formData.append('community', this.form.community);
+                formData.append('image', this.form.image);
+
+                console.log(formData)
+                axios.post('/blog/addImg', formData, headers).then(response => {
+                    console.log(response.data);
+                    this.form = {};
+                    this.showAlert();
+                    this.errors = {}
+                    // this.success();
+                }).catch(error => {
+                    if (error.response.status === 422) {
+                        // console.error('error');
+                        this.errors = error.response.data.errors || {};
+                        console.error(this.errors);
+                    }
+                })
             },
             
             showAlert() {

@@ -21,6 +21,7 @@ Route::prefix('blog')->group(function () {
         return view('add');
     });
     Route::post('/add', 'BlogController@add');
+    Route::post('/addImg', 'BlogController@addImg');
     Route::get('/all', 'BlogController@all');
 
     Route::get('/show/{blog_id}', 'BlogController@show')->where(['blog_id' => '[0-9]+']);
