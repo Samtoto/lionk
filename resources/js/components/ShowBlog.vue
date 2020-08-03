@@ -1,7 +1,16 @@
 <template>
     <b-container fluid>
         <b-row class="d-flex justify-content-center">
+            
             <b-col cols="6" md="6" class="px-1">
+                <b-row class="pb-3 pt-1">
+                    <b-input-group>
+                        <b-form-input @click="add"></b-form-input>
+                        <b-input-group-append>
+                            <b-button  variant="outline-secondary"><b-icon icon="card-image" ></b-icon></b-button>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-row>
                 <b-row class="py-1" 
                     v-for="card in cards" :key="card.id"
                 >
@@ -66,6 +75,7 @@ import marked from 'marked';
 import hljs from 'highlight.js';
 import "highlight.js/styles/tomorrow-night.css";
 
+import { BIconCardImage } from 'bootstrap-vue'
 
 // init marked
 marked.setOptions({
@@ -116,6 +126,9 @@ export default {
                 console.log(response.data);
                 this.cards = response.data;
             });
+        },
+        add: function() {
+            window.location.href = "/blog/add";
         }
     }
 }
