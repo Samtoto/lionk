@@ -13,7 +13,7 @@ class CommunityController extends Controller
      * Undocumented function
      *
      * @param Request $request
-     * @return string json
+     * @return \Illuminate\Http\JsonResponse
      */
     public function changeStatus(Request $request)
     {
@@ -21,13 +21,19 @@ class CommunityController extends Controller
         $user = $request->user();
 
         $community = Community::find($community_id);
-
+        // Join or unjoin the community
         $community->user()->toggle($user);
 
         // return response()->json(['join_status'=>'changed'], 200);
         return $this->all($request);
     }
 
+    /**
+     * Get all communities which user has joined
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function all(Request $request)
     {
         $user = $request->user();

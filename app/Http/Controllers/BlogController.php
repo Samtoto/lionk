@@ -9,6 +9,12 @@ use Mews\Purifier\Facades\Purifier;
 
 class BlogController extends Controller
 {
+    /**
+     * Create common blog
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function add(Request $request)
     {
         \Debugbar::info($request->input());
@@ -37,10 +43,10 @@ class BlogController extends Controller
     }
 
     /**
-     * Add img tab
+     * Create blog with image
      *
      * @param Request $request
-     * @return json
+     * @return \Illuminate\Http\JsonResponse
      */
     public function addImg(Request $request)
     {
@@ -78,6 +84,12 @@ class BlogController extends Controller
         return response()->json($request->input(), 200);
     }
 
+    /**
+     * Get all blogs with relationships (users, community)
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function all(Request $request) {
 
         // The follow code is equal to:
@@ -110,6 +122,12 @@ class BlogController extends Controller
         return response()->json($blogs, 200);
     }
 
+    /**
+     * Show blog by blog_id
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View
+     */
     public function show (Request $request)
     {
         return view('comment_show', ['blog_id' => $request->blog_id]);

@@ -15,6 +15,13 @@ use Mews\Purifier\Facades\Purifier;
 class CommentController extends Controller
 {
 
+    /**
+     * Get blog by blog_id
+     * with relationships of comments and comments' children
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(Request $request)
     {
         $blog_id = $request->blog_id;
@@ -24,6 +31,12 @@ class CommentController extends Controller
         return response()->json($blog[0], 200);
     }
 
+    /**
+     * Create a comment
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function add(Request $request)
     {
         $comment = new Comment;
@@ -36,6 +49,12 @@ class CommentController extends Controller
         return $this->show($request);
     }
 
+    /**
+     * Create a sub comment
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function addSub(Request $request)
     {
         $comment = new Comment;
@@ -45,13 +64,10 @@ class CommentController extends Controller
         $comment->blog_id = $request->blog_id;
         $comment->save();
 
+        // Recursive get comments and children comments
         $comment = Comment::where('id', $comment->id)->with(['allChildren'])->get();
 
         return response()->json($comment[0], 200);
         // return $this->show($request);
     }
-    // public function add(Request $request)
-    // {
-        
-    // }
 }
