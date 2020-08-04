@@ -25,7 +25,6 @@
 export default {
     mounted: function() {
         axios.get('/community/all').then(response => {
-            console.log(response.data);
             this.cards = response.data;
         })
     },
@@ -36,11 +35,10 @@ export default {
     },
     methods: {
         join: function(id) {
-            console.log(this.success);
-            console.log(this.primary)
             axios.get('/community/change_status/'+id).then(response => {
-                console.log(response.data);
                 this.cards = response.data;
+            }).catch(error => {
+                window.location.href = '/login';
             });
         }
     }

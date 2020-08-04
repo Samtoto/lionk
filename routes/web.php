@@ -19,7 +19,7 @@ Route::prefix('blog')->group(function () {
 
     Route::get('/add', function () {
         return view('add');
-    });
+    })->middleware('auth');
     Route::post('/add', 'BlogController@add');
     Route::post('/addImg', 'BlogController@addImg');
     Route::get('/all', 'BlogController@all');
@@ -38,7 +38,7 @@ Route::prefix('community')->group(function () {
         return view('communities');
     })->name('communities');
 
-    Route::get('/change_status/{community_id}', 'CommunityController@changeStatus')->where(['community_id', '[0-9]+']);
+    Route::get('/change_status/{community_id}', 'CommunityController@changeStatus')->where(['community_id', '[0-9]+'])->middleware('auth');
     Route::get('/all', 'CommunityController@all');
     Route::get('/my', 'CommunityController@my');
     Route::get('/{community_id}', 'CommunityController@show')->where(['community_id', '[0-9]+']);
