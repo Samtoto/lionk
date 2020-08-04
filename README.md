@@ -1,4 +1,4 @@
-## About lionk
+# About lionk
 
 Laravel + Vue + Bootstrap  
 Blogs, Comments, Discuss and Communities ...  
@@ -9,9 +9,9 @@ This is a self-study project. This project is still under development, DO NOT us
 
 ## Dependences
 
-laravel 7.*
-Vue 2.*
-bootstrap-vue 2.*
+laravel 7.*  
+Vue 2.*  
+bootstrap-vue 2.*  
 
 ## Usage
 
@@ -23,24 +23,6 @@ bootstrap-vue 2.*
 - run `yarn` or `npm install`
 - run `yarn run dev` or `npm run dev`
 - run `php artisan migrate`
-
-## TODO
-
-- [x] Reply (sub) comment.
-- [x] The join button on the top right coner of blog card.
-- [ ] `Feat.` The join button: Joined: `leave` : `join`.
-- [x] Richtext markdown.
-- [ ] Nav bar.
-- [ ] `Feat.` Blog cards show community info.
-- [ ] `Page.` Admin panel
-- [ ] Scroll & Update
-- [ ] Vue components split to diff files
-- [ ] `Feat.` Reply comment should be comfirm joined community?
-- [ ] `Feat.` Blogs comments add vote
-- [ ] Virtual currency & Virtual gift
-- [ ] Restful API
-- [ ] `Page.` Person config
-- [ ] and ...
 
 ## Contributing
 
