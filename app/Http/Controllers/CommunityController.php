@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\User;
 use App\Community;
+use Illuminate\Support\Facades\Auth;
 
 class CommunityController extends Controller
 {
@@ -18,7 +19,7 @@ class CommunityController extends Controller
     public function changeStatus(Request $request)
     {
         $community_id = $request->community_id;
-        $user = $request->user();
+        $user = Auth::user();
 
         $community = Community::find($community_id);
         // Join or unjoin the community
@@ -36,16 +37,24 @@ class CommunityController extends Controller
      */
     public function all(Request $request)
     {
-        $user = $request->user();
         // get all communities
         // and with user relation
-        $communities = Community::with(['user'=> function ($query) use ($user) {
-            $query->where('user_id', $user->id);
+        $communities = Community::with(['user'=> function ($query) {
+            $query->where('user_id', Auth::id());
         }])->get();
         
         \Debugbar::info($communities->toArray());
         // dump($communities->toJson(JSON_PRETTY_PRINT));
         return response()->json($communities, 200);
+    }
+
+    public function my()
+    {
+        $user = Auth::user();
+        $myCommunities = $user->with('community')->get()[0]->community;
+        return response()->json($myCommunities, 200);
+        // dump($myCommunities->toJson(JSON_PRETTY_PRINT));
+        // dump($user->toJson(JSON_PRETTY_PRINT));
     }
 
     public function show(Request $request)

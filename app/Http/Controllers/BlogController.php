@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Blog;
 use App\User;
+use Illuminate\Support\Facades\Auth;
 use Mews\Purifier\Facades\Purifier;
 
 class BlogController extends Controller
@@ -27,7 +28,7 @@ class BlogController extends Controller
         ]);
         \Debugbar::info('request data validated');
         // return $request->input('title');
-        $user = $request->user();
+        $user = Auth::user();
         $blog = new Blog;
 
         $blog->title = $request->title;
@@ -61,7 +62,7 @@ class BlogController extends Controller
         ]);
         \Debugbar::info('request data validated');
         // return $request->input('title');
-        $user = $request->user();
+        $user = Auth::user();
         $blog = new Blog;
 
         $blog->title = $request->title_img;

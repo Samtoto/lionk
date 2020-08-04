@@ -10,6 +10,7 @@ use App\Blog;
 use App\Community;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Mews\Purifier\Facades\Purifier;
 
 class CommentController extends Controller
@@ -40,7 +41,7 @@ class CommentController extends Controller
     public function add(Request $request)
     {
         $comment = new Comment;
-        $comment->user_id = $request->user()->id;
+        $comment->user_id = Auth::id();
         $comment->parent_id = $request->comment_id;
         $comment->content = Purifier::clean($request->comment);
         $comment->blog_id = $request->blog_id;
@@ -58,7 +59,7 @@ class CommentController extends Controller
     public function addSub(Request $request)
     {
         $comment = new Comment;
-        $comment->user_id = $request->user()->id;
+        $comment->user_id = Auth::id();
         $comment->parent_id = $request->comment_id;
         $comment->content = Purifier::clean($request->comment);
         $comment->blog_id = $request->blog_id;
