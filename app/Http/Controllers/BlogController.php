@@ -106,9 +106,7 @@ class BlogController extends Controller
         // ]
         $blogs = Blog::limit(50)->with(['user', 'community'=> function ($query) use ($user) {
             // get the communities  and  its joined status with the request user joined
-            $query->with(['user' => function($query) use ($user) {
-                $query->where('user_id', $user->id);
-            }]);
+            $query->with(['user']);
         }])->withCount('comment')->get();
 
         \Debugbar::info($blogs[0]->toArray());
