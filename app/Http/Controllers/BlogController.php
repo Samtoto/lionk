@@ -79,32 +79,28 @@ class BlogController extends Controller
     }
 
     public function all(Request $request) {
-        $user = $request->user();
-        // get all blogs with users and communities
-        // return:
-        // ["id" => 13
-        //   "title" => "test Community"
-        //   "content" => "test Community add blog"
-        //   "user_id" => 1
-        //   "community_id" => 52
-        //   "comment_count" => 5
-        //   "user" => array:6 []
-        //   "community" => array:6 [
-        //     "id" => 52
-        //     "name" => "Futurology"
-        //     "user" => array:1 [
-        //       0 => array:7 [
-        //         "id" => 1
-        //         "name" => "Sam"
-        //         "pivot" => array:2 [
-        //           "community_id" => 52
-        //           "user_id" => 1
-        //         ]
-        //       ]
-        //     ]
-        //   ]
-        // ]
-        $blogs = Blog::limit(50)->with(['user', 'community'=> function ($query) use ($user) {
+
+        // The follow code is equal to:
+        // Get 50 Blogs with count of comments:
+        // SELECT `blogs`.*, (
+        //     SELECT COUNT(*) FROM `comments` WHERE `blogs`.`id` = `comments`.`blog_id`
+        //     ) AS `comment_count` 
+        //     FROM `blogs` LIMIT 50;
+        // 
+        // Get the relation. blogs <-> users
+        // SELECT * FROM `users` WHERE `users`.`id` IN (33, ..., 45);
+        // 
+        // Get the relation. communities <-> blogs
+        // SELECT * FROM `communities` WHERE `communities`.`id` IN (52, ..., 56);
+        // 
+        // Get the relation. communities <-> users
+        // SELECT `users`.*, 
+        //        `user_community`.`community_id` as `pivot_community_id`, 
+        //        `user_community`.`user_id` as `pivot_user_id` 
+        //        FROM `users` INNER JOIN 
+        //            `user_community` ON `users`.`id` = `user_community`.`user_id` 
+        //        WHERE `user_community`.`community_id` in (52, ..., 76);
+        $blogs = Blog::limit(50)->with(['user', 'community'=> function ($query) {
             // get the communities  and  its joined status with the request user joined
             $query->with(['user']);
         }])->withCount('comment')->get();
