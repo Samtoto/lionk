@@ -90,7 +90,8 @@ class BlogController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function all(Request $request) {
+    public function all(Request $request)
+    {
 
         // The follow code is equal to:
         // Get 50 Blogs with count of comments:
