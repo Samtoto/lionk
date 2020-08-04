@@ -8,31 +8,37 @@
                     <b-card-text v-html="marked(card.content?card.content:'')"></b-card-text>
                     <!-- <b-button>reply</b-button> -->
                     <!-- <textarea></textarea> -->
+                    <div v-show="user_id">
+                        <p>Comment as ???</p>
+                        <b-card no-body>
+                            <b-tabs card>
+                                <b-tab title="Edit" active>
+                                    <b-form-textarea
+                                        id="content"
+                                        v-model.trim="form.comment"
+                                        placeholder="Enter something..."
+                                        rows="3"
+                                        max-rows="6"
+                                    ></b-form-textarea>
+                                </b-tab>
+                                <b-tab title="Preview">
+                                    <b-card-text v-html="marked(form.comment?form.comment:'')"></b-card-text>
+                                </b-tab>
+                            </b-tabs>
+                        </b-card>
+                        <b-button block variant="outline-primary" @click="reply">Comment</b-button>
+                    </div>
+                    <div v-show="!user_id">
+                        <b-card-text><p style="text-align:left;color: gray"><br />Wanna reply a comment?<br />
+                            <b-link to="/login">Login</b-link> or <b-link to="/register">Register</b-link></p>
+                        </b-card-text>
+                        <!-- <p>login & register</p> -->
+                    </div>
+                </b-card>
 
-                    <p>Comment as ???</p>
-                    <b-card no-body>
-                        <b-tabs card>
-                            <b-tab title="Edit" active>
-                                <b-form-textarea
-                                    id="content"
-                                    v-model.trim="form.comment"
-                                    placeholder="Enter something..."
-                                    rows="3"
-                                    max-rows="6"
-                                ></b-form-textarea>
-                            </b-tab>
-                            <b-tab title="Preview">
-                                <b-card-text v-html="marked(form.comment?form.comment:'')"></b-card-text>
-                            </b-tab>
-                        </b-tabs>
-                    </b-card>
-
-                    <b-button block variant="outline-primary" @click="reply">Comment</b-button>
-                    </b-card>
-
-                    <ul style="list-style: none; background:#fff">
-                        <tree-item v-for="(comment, index) in treeData" :key="index" :comment="comment"></tree-item>
-                    </ul>
+                <ul style="list-style: none; background:#fff">
+                    <tree-item v-for="(comment, index) in treeData" :key="index" :comment="comment" :user_id="user_id"></tree-item>
+                </ul>
             </b-col>
             <b-col md="3" class="px-5">
                 <b-row class="py-1">
@@ -143,18 +149,22 @@ Vue.component('tree-item', {
                 <b-button size="sm">id: {{ comment.id }}</b-button>
                 <b-button size="sm">{{ comment.user ? comment.user.name : '' }}</b-button>
                 <b-button size="sm">parent_id: {{ comment.parent_id ? comment.parent_id : 'null' }}</b-button>
-                <b-button size="sm" @click="toggle" variant="primary">reply</b-button>
+                <b-button size="sm" @click="toggle" variant="primary" v-show="user_id">reply</b-button>
+                <b-button size="sm" variant="primary" v-show="!user_id" to="/login">Login</b-button>
+                <b-button size="sm" variant="primary" v-show="!user_id" to="/register">Register</b-button>
+
                 <Reply @toggle="toggle" v-show="isOpen" :parent_id="comment.id"> </Reply>
             </small>
         </b-card-text>
         </b-card>
         <ul style="list-style: none;" v-if="comment.all_children">
-            <tree-item v-for="(comment, index) in comment.all_children" :key="index" :comment="comment" @reply-comment="$emit('reply-comment', comment, content)">
+            <tree-item v-for="(comment, index) in comment.all_children" :key="index" :comment="comment" :user_id="user_id" @reply-comment="$emit('reply-comment', comment, content)">
             </tree-item>
         </ul>
     </li>`,
     props: {
         comment: Object,
+        user_id: String,
     },
     data: function () {
         return {
@@ -174,6 +184,7 @@ Vue.component('tree-item', {
 export default {
     data() {
         return {
+            user_id: document.getElementById('user').value,
             card: {},
             treeData: {},
             form: {
@@ -185,6 +196,7 @@ export default {
         }
     },
     mounted() {
+        console.log(this.user_id)
         let blog_id = document.querySelector('#blog_id').value;
         this.form.blog_id = blog_id;
         axios.get('/comment/show/' + blog_id).then(response => {
