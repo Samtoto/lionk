@@ -26,7 +26,7 @@
                 <b-card no-body>
                     
                     <b-tabs pills card>
-                        <b-tab title="Post" active>
+                        <b-tab title="Post" :active="postType('common')">
                             <template v-slot:title>
                                 <b-icon icon="card-text"></b-icon> Post
                             </template>
@@ -71,7 +71,7 @@
                                 </b-form-group>
                             </b-form>
                         </b-tab>
-                        <b-tab title="Image">
+                        <b-tab title="Image" :active="postType('image')">
                             <template v-slot:title>
                                 <b-icon icon="card-image" ></b-icon> Image
                             </template>
@@ -230,7 +230,14 @@
                     }
                 })
             },
-            
+            postType(t) {
+                if (t === 'comment') {
+                    return location.hash === '';
+                } else if (t === 'image') {
+                    return location.hash === '#image';
+                }
+            },
+
             showAlert() {
                 this.dismissCountDown = this.dismissSecs
             },

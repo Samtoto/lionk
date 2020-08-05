@@ -7,7 +7,7 @@
                     <b-input-group size="lg">
                         <b-form-input @click="add"></b-form-input>
                         <b-input-group-append>
-                            <b-button  variant="outline-secondary"><b-icon icon="card-image" ></b-icon></b-button>
+                            <b-button  variant="outline-secondary" to="/blog/add#image"><b-icon icon="card-image" ></b-icon></b-button>
                         </b-input-group-append>
                     </b-input-group>
                 </b-row>
