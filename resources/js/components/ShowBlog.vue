@@ -37,7 +37,7 @@
                         <b-card-footer
                             
                         >
-                            <b-button @click="reply(card.id)" size="sm" variant="primary"> {{ card.comment_count }} comments</b-button>
+                            <b-button @click="reply(card.id)" size="sm" variant="primary"> {{ card.comment_count }} comment{{(card.comment_count<=1)?'': 's'}}</b-button>
                         </b-card-footer>
                     </b-card>
                 </b-row>
