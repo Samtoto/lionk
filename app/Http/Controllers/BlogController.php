@@ -95,30 +95,48 @@ class BlogController extends Controller
     public function all(Request $request)
     {
 
-        // The follow code is equal to:
-        // Get 50 Blogs with count of comments:
-        // SELECT `blogs`.*, (
-        //     SELECT COUNT(*) FROM `comments` WHERE `blogs`.`id` = `comments`.`blog_id`
-        //     ) AS `comment_count` 
-        //     FROM `blogs` LIMIT 50;
-        // 
-        // Get the relation. blogs <-> users
-        // SELECT * FROM `users` WHERE `users`.`id` IN (33, ..., 45);
-        // 
-        // Get the relation. communities <-> blogs
-        // SELECT * FROM `communities` WHERE `communities`.`id` IN (52, ..., 56);
-        // 
-        // Get the relation. communities <-> users
-        // SELECT `users`.*, 
-        //        `user_community`.`community_id` as `pivot_community_id`, 
-        //        `user_community`.`user_id` as `pivot_user_id` 
-        //        FROM `users` INNER JOIN 
-        //            `user_community` ON `users`.`id` = `user_community`.`user_id` 
-        //        WHERE `user_community`.`community_id` in (52, ..., 76);
-        $blogs = Blog::limit(50)->with(['user', 'community'=> function ($query) {
-            // get the communities  and  its joined status with the request user joined
-            $query->with(['user']);
-        }])->withCount('comment')->get();
+        if (Auth::check()) {
+
+            // The follow code is equal to:
+            // Get 50 Blogs with count of comments:
+            // SELECT `blogs`.*,
+            //     (
+            //         SELECT COUNT(*)
+            //         FROM `comments`
+            //         WHERE `blogs`.`id` = `comments`.`blog_id`
+            //     ) AS `comment_count`
+            // FROM `blogs`
+            // LIMIT 50;
+            // 
+            // Get the relation. blogs <-> users
+            // SELECT * FROM `users` WHERE `users`.`id` IN (33, ..., 45);
+            // 
+            // Get the relation. communities <-> blogs
+            // SELECT * FROM `communities` WHERE `communities`.`id` IN (52, ..., 56);
+            // 
+            // Get the relation. communities <-> current users
+            // SELECT `users`.*,
+            //     `user_community`.`community_id` AS `pivot_community_id`,
+            //     `user_community`.`user_id` AS `pivot_user_id`
+            // FROM `users`
+            //     INNER JOIN `user_community` ON `users`.`id` = `user_community`.`user_id`
+            // WHERE `user_community`.`community_id` IN (52, 56, 58, 59, 61, 63, 65, 76)
+            //     and `user_id` = 1
+
+            $blogs = Blog::limit(50)->with(['user', 'community'=> function ($query) {
+                // get the communities  and  its joined status with the request user joined
+                $query->with(['user'=> function($query) {
+                    $query->where('user_id', Auth::id());
+                }]);
+            }])->withCount('comment')->get();
+        } else {
+            $blogs = Blog::limit(50)->with(['user', 'community' => function ($query) {
+                // get the communities  and  its joined status with the request user joined
+                $query->with(['user' => function ($query) {
+                    $query->where('user_id', '0');
+                }]);
+            }])->withCount('comment')->get();
+        }
         foreach ($blogs as $key => $blog) {
             if ($blog->img_path) {
                 $blog->img_path = Storage::disk('public_uploads')->url($blog->img_path);
