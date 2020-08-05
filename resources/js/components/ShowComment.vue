@@ -6,6 +6,7 @@
                     <!-- prevent error alike https://stackoverflow.com/questions/52751705/vue-warning-when-accessing-nested-object -->
                     <b-card-title>{{ card.title }} <small>Posted by {{ card.user ? card.user.name : '' }} {{card.created_at}}</small></b-card-title>
                     <b-card-text v-html="marked(card.content?card.content:'')"></b-card-text>
+                    <b-card-img-lazy v-show="card.img_path" :src="card.img_path"></b-card-img-lazy>
                     <!-- <b-button>reply</b-button> -->
                     <!-- <textarea></textarea> -->
                     <div v-show="user_id">

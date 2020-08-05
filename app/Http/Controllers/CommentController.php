@@ -12,6 +12,7 @@ use App\Community;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Mews\Purifier\Facades\Purifier;
+use Illuminate\Support\Facades\Storage;
 
 class CommentController extends Controller
 {
@@ -29,6 +30,11 @@ class CommentController extends Controller
         $blog = Blog::where('id', $blog_id)->with(['comment'=> function($query){
             $query->where('parent_id', null)->with(['allChildren', 'user']);
         }, 'user'])->get();
+        \Debugbar::info($blog[0]->toArray());
+        // \Debugbar::info($blog[0]->img_path);
+        if ($blog[0]->img_path) {
+            $blog[0]->img_path = Storage::disk('public_uploads')->url($blog[0]->img_path);
+        }
         return response()->json($blog[0], 200);
     }
 

@@ -24,6 +24,7 @@
                                 > Join </b-button>
                                 </small></b-card-title>
                             <b-card-title>{{ card.title}} </b-card-title>
+                            <b-card-img-lazy v-show="card.img_path" :src="card.img_path"></b-card-img-lazy>
                             <b-card-text v-html="marked(card.content?card.content:'')"></b-card-text>
                             <!-- <b-link :to="{ path: 'reply', query: { blog_id: card.id } }" class="btn btn-primary">reply</b-link> -->
                             <b-button @click="reply(card.id)"  variant="primary"> {{ card.comment_count }} comments</b-button>

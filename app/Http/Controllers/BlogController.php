@@ -7,6 +7,7 @@ use App\Blog;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Mews\Purifier\Facades\Purifier;
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
@@ -118,8 +119,13 @@ class BlogController extends Controller
             // get the communities  and  its joined status with the request user joined
             $query->with(['user']);
         }])->withCount('comment')->get();
+        foreach ($blogs as $key => $blog) {
+            if ($blog->img_path) {
+                $blog->img_path = Storage::disk('public_uploads')->url($blog->img_path);
+            }
+        }
 
-        \Debugbar::info($blogs[0]->toArray());
+        \Debugbar::info($blogs->toArray());
 
         return response()->json($blogs, 200);
     }
