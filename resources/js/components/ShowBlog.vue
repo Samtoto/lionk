@@ -19,7 +19,7 @@
                             header-bg-variant="transparent"
                         >
                             <small style="font-size:60%">
-                                {{ card.community.name ? card.community.name : '' }} • Posted by {{card.user.name}} {{card.created_at}} 
+                                {{ card.community.name ? card.community.name : '' }} • Posted by {{card.user.name}} • {{timeFormatter(card.created_at)}} 
                                 <b-button
                                     variant="primary"
                                     @click="joinCommunity(card.community.id)"
@@ -141,6 +141,24 @@ export default {
         },
         add: function() {
             window.location.href = "/blog/add";
+        },
+        timeFormatter(date) {
+            let d = new Date(date)
+            let now = new Date()
+            // document.write(Math.floor((now - d) / 1000))
+            let diff = now - d;
+            if (diff < 60000) {
+                return Math.floor(diff / 1000) + ' secs ago'
+            } else if (diff < 3600000) {
+                return Math.floor(diff / 60000) + ' mins ago'
+            } else if (diff < 3600000 * 24) {
+                return Math.floor(diff / 3600000) + ' hours ago'
+            } else if (diff < 3600000 * 24 * 30) {
+                return Math.floor(diff / 3600000 / 24) + ' days ago'
+            } else {
+                return d.toLocaleString()
+            }
+
         }
     }
 }

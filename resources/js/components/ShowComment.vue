@@ -4,7 +4,7 @@
             <b-col cols="6" md="6" class="px-1">
                 <b-card style="width:100%">
                     <!-- prevent error alike https://stackoverflow.com/questions/52751705/vue-warning-when-accessing-nested-object -->
-                    <b-card-title>{{ card.title }} <small>Posted by {{ card.user ? card.user.name : '' }} {{card.created_at}}</small></b-card-title>
+                    <b-card-title>{{ card.title }} <small style="font-size:60%">• Posted by {{ card.user ? card.user.name : '' }} • {{timeFormatter(card.created_at)}}</small></b-card-title>
                     <b-card-text v-html="marked(card.content?card.content:'')"></b-card-text>
                     <b-card-img-lazy v-show="card.img_path" :src="card.img_path"></b-card-img-lazy>
                     <!-- <b-button>reply</b-button> -->
@@ -249,6 +249,23 @@ export default {
             // console.log(this.card.comment)
             this.addChild(newComment, this.card.comment)
             // console.log('submit with busEvent', newComment)
+        },
+        timeFormatter(date) {
+            let d = new Date(date)
+            let now = new Date()
+            let diff = now - d;
+            if (diff < 60000) {
+                return Math.floor(diff / 1000) + ' secs ago'
+            } else if (diff < 3600000) {
+                return Math.floor(diff / 60000) + ' mins ago'
+            } else if (diff < 3600000 * 24) {
+                return Math.floor(diff / 3600000) + ' hours ago'
+            } else if (diff < 3600000 * 24 * 30) {
+                return Math.floor(diff / 3600000 / 24) + ' days ago'
+            } else {
+                return d.toLocaleString()
+            }
+
         }
     },
     created () {
