@@ -5,7 +5,7 @@
                 <b-card style="width:100%">
                     <!-- prevent error alike https://stackoverflow.com/questions/52751705/vue-warning-when-accessing-nested-object -->
                     <b-card-title>{{ card.title }} <small style="font-size:60%">• Posted by {{ card.user ? card.user.name : '' }} • {{timeFormatter(card.created_at)}}</small></b-card-title>
-                    <b-card-text v-html="marked(card.content?card.content:'')"></b-card-text>
+                    <b-card-text v-html="card.content?card.content:''"></b-card-text>
                     <b-card-img-lazy v-show="card.img_path" :src="card.img_path"></b-card-img-lazy>
                     <!-- <b-button>reply</b-button> -->
                     <!-- <textarea></textarea> -->
@@ -143,7 +143,7 @@ Vue.component('tree-item', {
     <li style="">
         <b-card border-variant="light">
         <b-card-text></b-card-text>
-        <b-card-text v-html="marked(comment.content)">
+        <b-card-text v-html="comment.content">
         </b-card-text>
         <b-card-text>
             <small>
