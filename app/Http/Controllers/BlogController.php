@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Blog;
 use App\User;
 use Illuminate\Support\Facades\Auth;
-use Mews\Purifier\Facades\Purifier;
 use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
@@ -34,7 +33,7 @@ class BlogController extends Controller
 
         $blog->title = $request->title;
 
-        $blog->content = Purifier::clean($request->content);
+        $blog->content = $request->content;
         $blog->community_id = $request->community;
         // $blog->save();
         $user->blog()->save($blog);
@@ -131,7 +130,7 @@ class BlogController extends Controller
             }])->withCount('comment')->get();
         } else {
             $blogs = Blog::limit(50)->with(['user', 'community' => function ($query) {
-                // get the communities  and  its joined status with the request user joined
+                // need user attr
                 $query->with(['user' => function ($query) {
                     $query->where('user_id', '0');
                 }]);
@@ -154,7 +153,7 @@ class BlogController extends Controller
      * @param Request $request
      * @return \Illuminate\View\View
      */
-    public function show (Request $request)
+    public function show(Request $request)
     {
         return view('comment_show', ['blog_id' => $request->blog_id]);
     }

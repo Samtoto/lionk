@@ -11,7 +11,6 @@ use App\Community;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
-use Mews\Purifier\Facades\Purifier;
 use Illuminate\Support\Facades\Storage;
 
 class CommentController extends Controller
@@ -49,7 +48,7 @@ class CommentController extends Controller
         $comment = new Comment;
         $comment->user_id = Auth::id();
         $comment->parent_id = $request->comment_id;
-        $comment->content = Purifier::clean($request->comment);
+        $comment->content = $request->comment;
         $comment->blog_id = $request->blog_id;
         $comment->save();
         // TODO should return the success one
@@ -67,7 +66,7 @@ class CommentController extends Controller
         $comment = new Comment;
         $comment->user_id = Auth::id();
         $comment->parent_id = $request->comment_id;
-        $comment->content = Purifier::clean($request->comment);
+        $comment->content = $request->comment;
         $comment->blog_id = $request->blog_id;
         $comment->save();
 
