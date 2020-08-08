@@ -20,9 +20,9 @@
                 </b-row>
                 
                 <b-card no-body>
-                    
+
                     <b-tabs pills card>
-                        <b-tab title="Post" v-show="postType('common')">
+                        <b-tab title="Post" v-if="postType('common')">
                             <template v-slot:title>
                                 <b-icon icon="card-text"></b-icon> Post
                             </template>
@@ -81,6 +81,7 @@
                                     <b-form-input type="text" v-model.trim="form.title_img"/>
                                     <div v-if="errors && errors.title_img" class="text-danger">{{ errors.title_img[0] }}</div>
                                 </b-form-group>
+                                <b-card-img-lazy :src="form.image_url"></b-card-img-lazy>
                                 <b-form-group
                                     label="Image"
                                     label-for="input-horizontal"
@@ -138,7 +139,7 @@ marked.setOptions({
 export default {
     
     mounted() {
-        console.log(this.blog);
+        // console.log(this.blog);
         this.marked = marked
     },
     props:{
@@ -148,13 +149,14 @@ export default {
         return {
             options: [],
             form: {
-                id: this.blog.id,
+                blog_id: this.blog.id,
                 title: this.blog.img_path?'':this.blog.title,
                 content: this.blog.content,
                 community_id: this.blog.community_id,
                 community: this.blog.community.name,
                 title_img: this.blog.img_path?this.blog.title: '',
-                image: this.blog.img_path,
+                image_url: this.blog.img_path,
+                image: null,
             },
             // blog: blog,
             dismissSecs: 5,
@@ -168,7 +170,7 @@ export default {
         onSubmit(evt) {
             // console.log(this.form)
             this.form._method = 'put';
-            axios.put('/blog/'+this.form.id, this.form).then(response => {
+            axios.put('/blog/'+this.form.blog_id, this.form).then(response => {
                 console.log(response.data);
                 this.form = {};
                 this.showAlert();
@@ -194,13 +196,11 @@ export default {
             }
             let formData = new FormData();
             formData.append('title_img', this.form.title_img);
-            formData.append('community_id', this.form.community_id);
             formData.append('image', this.form.image);
             formData.append('_method', 'put');
 
-
-            console.log(formData)
-            axios.post('/blog/addImg', formData, headers).then(response => {
+            // console.log(formData)
+            axios.post('/blog/'+this.form.blog_id, formData, headers).then(response => {
                 console.log(response.data);
                 this.form = {};
                 this.showAlert();
@@ -216,16 +216,9 @@ export default {
         },
         postType(t) {
             if (t === 'common') {
-                if (this.img_path === undefined) {
-                    return true;
-                } else {
-                    if (this.img_path.length == 0) {
-                        return true;
-                    }
-                }
-                return false;
+                return ! Boolean(this.form.image_url);
             } else if (t === 'image') {
-                return this.img_path !== undefined && this.img_path.length > 0;
+                return Boolean(this.form.image_url);
             }
         },
 

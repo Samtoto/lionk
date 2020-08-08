@@ -172,6 +172,7 @@ class BlogController extends Controller
      */
     public function show(Request $request)
     {
+        
         return view('comment_show', ['blog_id' => $request->blog_id]);
     }
 
@@ -182,6 +183,9 @@ class BlogController extends Controller
             $blog = Blog::where('id', $request->blog_id)->with('community')->get();
             if (Gate::allows('edit-blogs', $blog[0])) {
                 // $blog->content = base64_decode($blog->content);
+                if ($blog[0]->img_path) {
+                    $blog[0]->img_path = Storage::disk('public_uploads')->url($blog[0]->img_path);
+                }
                 \Debugbar::info($blog->toArray());
                 // dump($blog);
                 return view('blog.edit', ['blog'=> $blog[0]]);
@@ -195,16 +199,31 @@ class BlogController extends Controller
     public function update(Request $request) {
         if (Auth::check()) {
 
-            $blog = Blog::find($request->id);
+            $blog = Blog::find($request->blog_id);
                 \Debugbar::info($blog->toArray());
             if (Gate::allows('update-blogs', $blog)) {
                 // $blog->content = base64_decode($blog->content);
                 \Debugbar::info($blog->toArray());
                 // dump($blog);
-
-                $blog->title = $request->title;
-                $blog->content = $request->content;
-                $blog->save();
+                if ($blog->img_path) {
+                    $validatedData = $request->validate([
+                        'title_img' => 'bail|required|max:255',
+                        'image' => 'image|required',
+                    ]);
+                    $blog->title = $request->title_img;
+                    $path = $request->file('image')->store('images', 'public_uploads');
+                    $blog->img_path = $path;
+                    $blog->save();
+                    
+                } else {
+                    $validatedData = $request->validate([
+                        'title' => 'bail|required|max:255',
+                    ]);
+                    $blog->title = $request->title;
+                    $blog->content = $request->content;
+                    $blog->save();
+                }
+                
                 return response()->json($blog, 200);
             }
         }
