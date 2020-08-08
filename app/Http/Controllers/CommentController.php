@@ -8,9 +8,10 @@ use App\User;
 use App\Blog;
 
 use App\Community;
-
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
@@ -73,6 +74,45 @@ class CommentController extends Controller
         }
         // \Debugbar::info($blog[0]->comment);
         return response()->json($blog[0], 200);
+    }
+
+    public function edit(Request $request)
+    {
+        if (Auth::check()) {
+            $comment = Comment::find($request->comment_id);
+            if (Gate::allows('edit-comments', $comment)) {
+                return response()->json($comment, 200);
+            }
+        }
+        throw new AuthorizationException();
+    }
+
+    public function update(Request $request)
+    {
+        if (Auth::check()) {
+            $comment = Comment::find($request->comment_id);
+            if (Gate::allows('update-comments', $comment)) {
+                $validatedData = $request->validate([
+                    'content'=> 'required'
+                ]);
+                $comment->content = $request->content;
+                $comment->save();
+
+                // parse markdown
+                $environment = Environment::createCommonMarkEnvironment();
+                $environment->addExtension(new GithubFlavoredMarkdownExtension());
+
+                $commonMark = new CommonMarkConverter(
+                    ['html_input' => 'strip', 'allow_unsafe_links' => false],
+                    $environment
+                );
+                $comment->content = $commonMark->convertToHtml($comment->content);
+                // parse done
+
+                return response()->json($comment, 200);
+            } 
+        }
+        throw new AuthorizationException();
     }
 
     /**

@@ -141,19 +141,75 @@ var Reply = Vue.component('Reply', {
     }
 })
 
+Vue.component('EditComment', {
+    template: `<b-form>
+        <b-card no-body>
+            <b-tabs card>
+                <b-tab title="Edit" active>
+                    <b-form-textarea
+                    v-model.trim="editComment.content"
+                    placeholder="Enter something..."
+                    rows="3"
+                    max-rows="6"
+                    ></b-form-textarea>
+                </b-tab>
+                <b-tab title="Preview">
+                    <b-card-text v-html="marked(editComment.content)"></b-card-text>
+                </b-tab>
+            </b-tabs>
+        </b-card>
+        <b-button variant="outline-info" @click="submit" size="sm">Update Comment</b-button>
+    </b-form>`,
+    props: {
+        comment: Object
+    },
+    activated() {
+        axios.get('/comment/'+ this.comment.id +'/edit').then(response => {
+            this.editComment.content = response.data.content
+            this.editComment.comment_id = response.data.id
+            // console.log(response.data)
+        })
+    },
+    data() {
+        return {
+            editComment: {
+                comment_id: '',
+                content: '',
+            },
+            marked: marked
+        }
+    },
+    methods: {
+        submit: function() {
+            let formData = this.editComment;
+            formData._method = 'put';
+            axios.put('/comment/'+this.editComment.comment_id, formData).then(response => {
+                let updatedComment = response.data
+                bus.$emit("comment-update-bus", updatedComment)
+                this.content = ''
+                this.$emit('toggleEdit')
+            })
+        }
+    }
+})
+
 Vue.component('tree-item', {
     template: `
     <li style="">
         <b-card border-variant="light">
-        <b-card-text></b-card-text>
-        <b-card-text v-html="comment.content">
+        <keep-alive>
+        <b-card-text v-html="comment.content" v-if="!isEdit">
         </b-card-text>
+        <EditComment @toggleEdit="toggleEdit" v-if="isEdit" :comment="comment" :user_id="user_id"></EditComment>
+        </keep-alive>
         <b-card-text>
             <small>
                 <b-button size="sm">id: {{ comment.id }}</b-button>
                 <b-button size="sm">{{ comment.user ? comment.user.name : '' }}</b-button>
                 <b-button size="sm">parent_id: {{ comment.parent_id ? comment.parent_id : 'null' }}</b-button>
                 <b-button size="sm" @click="toggle" variant="primary" v-show="user_id">reply</b-button>
+                <b-button size="sm" @click="toggleEdit" variant="warning" v-show="user_id==comment.user.id">Edit</b-button>
+                <b-button size="sm" @click="" variant="danger" v-show="user_id==comment.user.id">Delete</b-button>
                 <b-button size="sm" variant="primary" v-show="!user_id" to="/login">Login</b-button>
                 <b-button size="sm" variant="primary" v-show="!user_id" to="/register">Register</b-button>
 
@@ -174,13 +230,17 @@ Vue.component('tree-item', {
         return {
             isOpen: false,
             content: '',
-            marked: marked
+            marked: marked,
+            isEdit: false
         }
     },
     methods: {
         toggle: function() {
             this.isOpen = !this.isOpen;
             
+        },
+        toggleEdit: function() {
+            this.isEdit = !this.isEdit;
         }
     }
 })
@@ -226,7 +286,7 @@ export default {
         },
         addChild(newComment, comments) {
             if (comments.length == 0) {
-                    return;
+                return;
             }
             // console.log(comments);
             // return;
@@ -253,6 +313,27 @@ export default {
             this.addChild(newComment, this.card.comment)
             // console.log('submit with busEvent', newComment)
         },
+        updateChild: function (updatedComment, comments) {
+            if (comments.length == 0) {
+                return false;
+            }
+            for (var comment of comments) {
+                if (comment.id === updatedComment.id) {
+                    console.log('found it & update it!');
+                    // comment = updatedComment // not working
+                    comment.content = updatedComment.content
+                    return;
+                }
+                if (comment.hasOwnProperty('all_children')) {
+                    this.updateChild(updatedComment, comment.all_children)
+                } else {
+                    return;
+                }
+            }
+        },
+        updateComment: function(updatedComment) {
+            this.updateChild(updatedComment, this.card.comment);
+        },
         timeFormatter(date) {
             let d = new Date(date)
             let now = new Date()
@@ -276,9 +357,11 @@ export default {
     },
     created () {
         bus.$on('comment-bus', this.addComment)
+        bus.$on('comment-update-bus', this.updateComment)
     },
     destoryed () {
         bus.$off('comment-bus', this.addComment)
+        bus.$off('comment-update-bus', this.updateComment)
     },
 }
 

@@ -33,6 +33,8 @@ Route::prefix('comment')->group(function () {
     Route::get('/show/{blog_id}', 'CommentController@show')->where(['blog_id' => '[0-9]+']);
     Route::post('/add', 'CommentController@add');
     Route::post('/add_sub', 'CommentController@addSub');
+    Route::get('/{comment_id}/edit', 'CommentController@edit')->where(['comment_id' => '[0-9]+']);
+    Route::put('/{comment_id}', 'CommentController@update')->where(['comment_id' => '[0-9]+']);
 });
 
 Route::prefix('community')->group(function () {
