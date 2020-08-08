@@ -25,6 +25,8 @@ Route::prefix('blog')->group(function () {
     Route::get('/all', 'BlogController@all');
 
     Route::get('/show/{blog_id}', 'BlogController@show')->where(['blog_id' => '[0-9]+']);
+    Route::get('/{blog_id}/edit', 'BlogController@edit')->where(['blog_id' => '[0-9]+']);
+    Route::put('/{blog_id}', 'BlogController@update')->where(['blog_id' => '[0-9]+']);
 });
 
 Route::prefix('comment')->group(function () {

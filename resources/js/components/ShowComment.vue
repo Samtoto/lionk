@@ -10,6 +10,9 @@
                     <!-- <b-button>reply</b-button> -->
                     <!-- <textarea></textarea> -->
                     <div v-show="user_id">
+                        <b-button size="sm" @click="editBlog" v-show="card.user.id == user_id">Edit</b-button>
+                        <b-button size="sm" v-show="card.user.id == user_id">Delete</b-button>
+                        <hr />
                         <p>Comment as ???</p>
                         <b-card no-body>
                             <b-tabs card>
@@ -108,7 +111,7 @@ var Reply = Vue.component('Reply', {
         </b-form>`,
     methods: {
         submit: function () {
-            console.log('submit Reply', this.content, this.parent_id)
+            // console.log('submit Reply', this.content, this.parent_id)
             let subComment = {
                 comment_id: this.parent_id,
                 blog_id: document.querySelector('#blog_id').value,
@@ -197,7 +200,7 @@ export default {
         }
     },
     mounted() {
-        console.log(this.user_id)
+        // console.log(this.user_id)
         let blog_id = document.querySelector('#blog_id').value;
         this.form.blog_id = blog_id;
         axios.get('/comment/show/' + blog_id).then(response => {
@@ -266,6 +269,9 @@ export default {
                 return d.toLocaleString()
             }
 
+        },
+        editBlog: function() {
+            window.location.href = '/blog/' + this.form.blog_id + '/edit';
         }
     },
     created () {

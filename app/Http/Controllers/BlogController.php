@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Blog;
 use App\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
@@ -171,5 +173,41 @@ class BlogController extends Controller
     public function show(Request $request)
     {
         return view('comment_show', ['blog_id' => $request->blog_id]);
+    }
+
+    public function edit(Request $request)
+    {
+        if (Auth::check()) {
+
+            $blog = Blog::where('id', $request->blog_id)->with('community')->get();
+            if (Gate::allows('edit-blogs', $blog[0])) {
+                // $blog->content = base64_decode($blog->content);
+                \Debugbar::info($blog->toArray());
+                // dump($blog);
+                return view('blog.edit', ['blog'=> $blog[0]]);
+            }
+        }
+        throw new AuthorizationException;
+
+        // return 'Error on edit blog: ' . $request->blog_id;
+    }
+
+    public function update(Request $request) {
+        if (Auth::check()) {
+
+            $blog = Blog::find($request->id);
+                \Debugbar::info($blog->toArray());
+            if (Gate::allows('update-blogs', $blog)) {
+                // $blog->content = base64_decode($blog->content);
+                \Debugbar::info($blog->toArray());
+                // dump($blog);
+
+                $blog->title = $request->title;
+                $blog->content = $request->content;
+                $blog->save();
+                return response()->json($blog, 200);
+            }
+        }
+        throw new AuthorizationException;
     }
 }

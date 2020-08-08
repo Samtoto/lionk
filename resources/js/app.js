@@ -61,6 +61,7 @@ requireComponent.keys().forEach(fileName => {
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('show-comment', require('./components/ShowComment.vue').default);
 Vue.component('show-blog', require('./components/ShowBlog.vue').default);
+Vue.component('edit-blog', require('./components/EditBlog.vue').default);
 Vue.component('add-blog', require('./components/AddBlog.vue').default);
 // Vue.component('showdown-editor', require('./components/ShowDownEditor.vue').default)
 Vue.component('show-communities', require('./components/ShowCommunities.vue').default)
