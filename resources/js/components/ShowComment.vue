@@ -209,7 +209,7 @@ Vue.component('tree-item', {
                 <b-button size="sm">parent_id: {{ comment.parent_id ? comment.parent_id : 'null' }}</b-button>
                 <b-button size="sm" @click="toggle" variant="primary" v-show="user_id">reply</b-button>
                 <b-button size="sm" @click="toggleEdit" variant="warning" v-show="user_id==comment.user.id">Edit</b-button>
-                <b-button size="sm" @click="" variant="danger" v-show="user_id==comment.user.id">Delete</b-button>
+                <b-button size="sm" @click="deleteComment(comment.id)" variant="danger" v-show="user_id==comment.user.id">Delete</b-button>
                 <b-button size="sm" variant="primary" v-show="!user_id" to="/login">Login</b-button>
                 <b-button size="sm" variant="primary" v-show="!user_id" to="/register">Register</b-button>
 
@@ -241,6 +241,37 @@ Vue.component('tree-item', {
         },
         toggleEdit: function() {
             this.isEdit = !this.isEdit;
+        },
+        deleteComment: function(comment_id) {
+            
+            // this.deleteConfirm = ''
+            this.$bvModal.msgBoxConfirm('Please confirm that you want to delete the comment.', {
+                title: 'Please Confirm',
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'YES',
+                cancelTitle: 'NO',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+            .then(value => {
+                // this.deleteConfirm = value
+                if (value) {
+                    let formData = new FormData()
+                    formData.append('comment_id', comment_id)
+                    formData.append('_method', 'delete')
+                    axios.delete('/comment/'+comment_id, formData).then(response => {
+                        // console.log(comment_id)
+                        bus.$emit('comment-delete-bus', comment_id);
+                    })
+                }
+            })
+            .catch(err => {
+                // An error occurred
+            })
+            
         }
     }
 })
@@ -382,15 +413,38 @@ export default {
             .catch(err => {
                 // An error occurred
             })
+        },
+        deleteComment(comment_id, comments=this.card.comment) {
+            // console.log('delete process')
+            if ( !comments ) {
+                return ;
+            }
+            for (var comment of comments) {
+                if (comment_id === comment.id) {
+                    console.log('found it & delete it')
+                    // TODO
+                    comment.content = 'removed'
+                    // comment = [] // not working
+                    return ;
+                }
+                if (comment.hasOwnProperty('all_children')) {
+                    this.deleteComment(comment_id, comment.all_children)
+                } else {
+                    return;
+                }
+            }
+            return ;
         }
     },
     created () {
         bus.$on('comment-bus', this.addComment)
         bus.$on('comment-update-bus', this.updateComment)
+        bus.$on('comment-delete-bus', this.deleteComment)
     },
     destoryed () {
         bus.$off('comment-bus', this.addComment)
         bus.$off('comment-update-bus', this.updateComment)
+        bus.$off('comment-delete-bus', this.deleteComment)
     },
 }
 

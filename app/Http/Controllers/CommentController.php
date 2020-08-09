@@ -133,6 +133,20 @@ class CommentController extends Controller
         return $this->show($request);
     }
 
+    public function delete(Request $request)
+    {
+        if (Auth::check()) {
+            $comment = Comment::find($request->comment_id);
+            if (Gate::allows('delete-comments', $comment)) {
+                
+                $comment->delete();
+
+                return response()->json($request->comment_id, 200);
+            }
+        }
+        throw new AuthorizationException();
+    }
+
     /**
      * Create a sub comment
      *
