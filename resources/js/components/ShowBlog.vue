@@ -89,13 +89,13 @@ import { BIconCardImage } from 'bootstrap-vue'
 
 import { timeFormatter } from '../utils/helpers'
 
+import { getAllBlogs, joinCommunityToggle } from '../server/api'
+
 
 export default {
     data() {
         return {
-            cards: {
-
-            },
+            cards: {},
             marked: marked
         }
     },
@@ -106,19 +106,19 @@ export default {
     },
     methods: {
         reply: function(id) {
-            window.location.href="/blog/show/" + id
+            window.location.href = "/blog/show/" + id
         },
         joinCommunity: function(community_id) {
-            axios.get('/community/change_status/'+community_id).then(response => {
+            joinCommunityToggle(community_id).then(response => {
                 // TODO if joined show joined button
-                // when hover on show leave button
-                this.all();
+                // when hover on show leave button.
+                // TODO do not request all blogs, only change the community button
+                this.all()
             });
         },
-        all: function() {
-            axios.get('/blog/all').then(response => {
-                console.log(response.data);
-                this.cards = response.data;
+        all() {
+            getAllBlogs().then(response => {
+                this.cards = response.data
             });
         },
         add: function() {
