@@ -196,6 +196,24 @@ class BlogController extends Controller
         // return 'Error on edit blog: ' . $request->blog_id;
     }
 
+    public function delete(Request $request)
+    {
+        if (Auth::check()) {
+
+            $blog = Blog::find($request->blog_id);
+            if (Gate::allows('delete-blogs', $blog)) {
+                // $blog->content = base64_decode($blog->content);
+                $blog->delete();
+                \Debugbar::info($blog->toArray());
+                // dump($blog);
+                return response()->json($blog, 200);
+            }
+        }
+        throw new AuthorizationException;
+
+        // return 'Error on edit blog: ' . $request->blog_id;
+    }
+
     public function update(Request $request) {
         if (Auth::check()) {
 

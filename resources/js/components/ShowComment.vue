@@ -11,7 +11,7 @@
                     <!-- <textarea></textarea> -->
                     <div v-show="user_id">
                         <b-button size="sm" @click="editBlog" v-show="card.user.id == user_id">Edit</b-button>
-                        <b-button size="sm" v-show="card.user.id == user_id">Delete</b-button>
+                        <b-button size="sm" @click="deleteBlog(form.blog_id)" v-show="card.user.id == user_id">Delete</b-button>
                         <hr />
                         <p>Comment as ???</p>
                         <b-card no-body>
@@ -256,6 +256,7 @@ export default {
                 blog_id: null,
                 commet_id: null,
             },
+            deleteConfirm: '',
             marked: marked
         }
     },
@@ -353,6 +354,34 @@ export default {
         },
         editBlog: function() {
             window.location.href = '/blog/' + this.form.blog_id + '/edit';
+        },
+        deleteBlog: function(blog_id) {
+            this.deleteConfirm = ''
+            this.$bvModal.msgBoxConfirm('Please confirm that you want to delete the blog.', {
+                title: 'Please Confirm',
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'YES',
+                cancelTitle: 'NO',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+            .then(value => {
+                this.deleteConfirm = value
+                if (value) {
+                    let formData = new FormData();
+                    formData.append('_method', 'delete');
+                    formData.append('blog_id', this.form.blog_id);
+                    axios.delete('/blog/'+this.form.blog_id, formData).then(response => {
+                        location.href = '/';
+                    })
+                }
+            })
+            .catch(err => {
+                // An error occurred
+            })
         }
     },
     created () {

@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 use App\Community;
+use App\Comment;
+use Illuminate\Http\Request;
 
 Route::prefix('blog')->group(function () {
 
@@ -27,6 +29,7 @@ Route::prefix('blog')->group(function () {
     Route::get('/show/{blog_id}', 'BlogController@show')->where(['blog_id' => '[0-9]+']);
     Route::get('/{blog_id}/edit', 'BlogController@edit')->where(['blog_id' => '[0-9]+']);
     Route::put('/{blog_id}', 'BlogController@update')->where(['blog_id' => '[0-9]+']);
+    Route::delete('/{blog_id}', 'BlogController@delete')->where(['blog_id' => '[0-9]+']);
 });
 
 Route::prefix('comment')->group(function () {
@@ -35,6 +38,7 @@ Route::prefix('comment')->group(function () {
     Route::post('/add_sub', 'CommentController@addSub');
     Route::get('/{comment_id}/edit', 'CommentController@edit')->where(['comment_id' => '[0-9]+']);
     Route::put('/{comment_id}', 'CommentController@update')->where(['comment_id' => '[0-9]+']);
+    Route::delete('/{comment_id}', 'CommentController@delete')->where(['comment_id' => '[0-9]+']);
 });
 
 Route::prefix('community')->group(function () {
