@@ -14,7 +14,7 @@ axios.interceptors.response.use(function (response) {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
     if (response.status === 200) {
-        console.log('success')
+        // console.log('success')
         return Promise.resolve(response);
     } else {
         return Promise.reject(response)
@@ -43,6 +43,24 @@ export const createImageBlog = data => axios({
     url: '/blog/addImg',
     method: 'post',
     data,
+    headers: {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }
+})
+
+export const updateCommonBlog = (blog_id, data) => axios({
+    url: '/blog/' + blog_id,
+    method: 'put',
+    data
+})
+
+export const updateImageBlog = (blog_id, data) => axios({
+    url: '/blog/' + blog_id,
+    method: 'post',
+    _method: 'put',
+    data: data,
     headers: {
         headers: {
             'Content-Type': 'multipart/form-data'

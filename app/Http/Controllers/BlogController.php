@@ -218,10 +218,10 @@ class BlogController extends Controller
         if (Auth::check()) {
 
             $blog = Blog::find($request->blog_id);
-                \Debugbar::info($blog->toArray());
+                // \Debugbar::info($blog->toArray());
             if (Gate::allows('update-blogs', $blog)) {
                 // $blog->content = base64_decode($blog->content);
-                \Debugbar::info($blog->toArray());
+                // \Debugbar::info($blog->toArray());
                 // dump($blog);
                 if ($blog->img_path) {
                     $validatedData = $request->validate([

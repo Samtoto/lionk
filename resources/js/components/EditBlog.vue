@@ -115,6 +115,7 @@
 import { marked } from '../utils/markedHelper'
 
 import { BIconCardImage, BIconCardText } from 'bootstrap-vue'
+import { updateCommonBlog, updateImageBlog } from '../server/api'
 
 export default {
     
@@ -149,9 +150,8 @@ export default {
     methods: {
         onSubmit(evt) {
             // console.log(this.form)
-            this.form._method = 'put';
-            axios.put('/blog/'+this.form.blog_id, this.form).then(response => {
-                console.log(response.data);
+            updateCommonBlog(this.form.blog_id, this.form).then(response => {
+                // console.log(response.data);
                 this.form = {};
                 this.showAlert();
                 // this.success();
@@ -179,20 +179,24 @@ export default {
             formData.append('image', this.form.image);
             formData.append('_method', 'put');
 
-            // console.log(formData)
-            axios.post('/blog/'+this.form.blog_id, formData, headers).then(response => {
-                console.log(response.data);
-                this.form = {};
-                this.showAlert();
-                this.errors = {}
-                // this.success();
-            }).catch(error => {
-                if (error.response.status === 422) {
-                    // console.error('error');
-                    this.errors = error.response.data.errors || {};
-                    console.error(this.errors);
-                }
+            updateImageBlog(this.form.blog_id, formData).then(response => {
+                console.log(response.data)
             })
+
+            // // console.log(formData)
+            // axios.post('/blog/'+this.form.blog_id, formData, headers).then(response => {
+            //     console.log(response.data);
+            //     this.form = {};
+            //     this.showAlert();
+            //     this.errors = {}
+            //     // this.success();
+            // }).catch(error => {
+            //     if (error.response.status === 422) {
+            //         // console.error('error');
+            //         this.errors = error.response.data.errors || {};
+            //         console.error(this.errors);
+            //     }
+            // })
         },
         postType(t) {
             if (t === 'common') {
