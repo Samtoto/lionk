@@ -67,6 +67,7 @@
 <script>
 import { marked } from '../utils/markedHelper'
 import { timeFormatter } from '../utils/helpers';
+import { createComment, showComment, createSubComment, editComment, deleteComment, deleteBlog, updateComment } from '../server/api';
 
 const bus = new Vue({});
 var Reply = Vue.component('Reply', {
@@ -97,7 +98,7 @@ var Reply = Vue.component('Reply', {
                 comment: this.content
             }
             let newComment = {}
-            axios.post('/comment/add_sub', subComment).then(response => {
+            createSubComment(subComment).then(response => {
                 // console.log(response.data);
                 newComment = response.data
                 bus.$emit("comment-bus", newComment)
@@ -143,7 +144,7 @@ Vue.component('EditComment', {
         comment: Object
     },
     activated() {
-        axios.get('/comment/'+ this.comment.id +'/edit').then(response => {
+        editComment(this.comment.id).then(response => {
             this.editComment.content = response.data.content
             this.editComment.comment_id = response.data.id
             // console.log(response.data)
@@ -161,8 +162,8 @@ Vue.component('EditComment', {
     methods: {
         submit: function() {
             let formData = this.editComment;
-            formData._method = 'put';
-            axios.put('/comment/'+this.editComment.comment_id, formData).then(response => {
+            axios.put('/comment/'+this.editComment.comment_id, formData)
+            updateComment().then(response => {
                 let updatedComment = response.data
                 bus.$emit("comment-update-bus", updatedComment)
                 this.content = ''
@@ -240,8 +241,7 @@ Vue.component('tree-item', {
                 if (value) {
                     let formData = new FormData()
                     formData.append('comment_id', comment_id)
-                    formData.append('_method', 'delete')
-                    axios.delete('/comment/'+comment_id, formData).then(response => {
+                    deleteComment(comment_id, formData).then(response => {
                         // console.log(comment_id)
                         bus.$emit('comment-delete-bus', comment_id);
                     })
@@ -274,7 +274,7 @@ export default {
         // console.log(this.user_id)
         let blog_id = document.querySelector('#blog_id').value;
         this.form.blog_id = blog_id;
-        axios.get('/comment/show/' + blog_id).then(response => {
+        showComment(blog_id).then(response => {
             // console.log(response.data);
             this.card = response.data;
             this.treeData = this.card.comment
@@ -288,7 +288,7 @@ export default {
     methods: {
         reply: function(id) {
             // this.form.blog_id ;
-            axios.post('/comment/add', this.form).then(response => {
+            createComment(this.form).then(response => {
                 this.card = response.data;
                 this.treeData = this.card.comment
                 this.blogOwner = this.card.user
@@ -366,9 +366,8 @@ export default {
                 this.deleteConfirm = value
                 if (value) {
                     let formData = new FormData();
-                    formData.append('_method', 'delete');
                     formData.append('blog_id', this.form.blog_id);
-                    axios.delete('/blog/'+this.form.blog_id, formData).then(response => {
+                    deleteBlog(blog_id, formData).then(response => {
                         location.href = '/';
                     })
                 }

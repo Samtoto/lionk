@@ -25,6 +25,7 @@ axios.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
+/* blog */
 
 export const getAllBlogs = data => axios({
     url: '/blog/all',
@@ -32,8 +33,56 @@ export const getAllBlogs = data => axios({
     data
 });
 
+export const deleteBlog = (blog_id, data) => axios({
+    url: '/blog/' + blog_id,
+    method: 'delete',
+    data
+})
+
+
+/* community */
+
 export const joinCommunityToggle = (community_id, data={}) => axios({
     url: '/community/change_status/' + community_id,
     method: 'get',
+    data
+})
+
+
+/* comment */
+
+export const createComment = data => axios({
+    url: '/comment/add',
+    method: 'post',
+    data
+})
+
+export const showComment = (blog_id, data={}) => axios({
+    url: '/comment/show/' + blog_id,
+    method: 'get',
+    data
+})
+
+export const createSubComment = data => axios({
+    url: '/comment/add_sub',
+    method: 'post',
+    data
+})
+
+export const editComment = (comment_id, data={}) => axios({
+    url: '/comment/' + comment_id + '/edit',
+    method: 'get',
+    data
+})
+
+export const deleteComment = (comment_id, data={}) => axios({
+    url: '/comment/' + comment_id,
+    method: 'delete',
+    data
+})
+
+export const updateComment = (comment_id, data) => axios({
+    url: '/comment/' + comment_id,
+    method: 'put',
     data
 })
