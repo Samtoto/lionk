@@ -33,6 +33,23 @@ export const getAllBlogs = data => axios({
     data
 });
 
+export const createBlog = data => axios({
+    url: '/blog/add',
+    method: 'post',
+    data
+})
+
+export const createImageBlog = data => axios({
+    url: '/blog/addImg',
+    method: 'post',
+    data,
+    headers: {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }
+})
+
 export const deleteBlog = (blog_id, data) => axios({
     url: '/blog/' + blog_id,
     method: 'delete',
@@ -50,6 +67,12 @@ export const joinCommunityToggle = (community_id, data={}) => axios({
 
 export const getALlCommunity = data => axios({
     url: '/community/all',
+    method: 'get',
+    data
+})
+
+export const getMyCommunity = data => axios({
+    url: '/community/my',
     method: 'get',
     data
 })

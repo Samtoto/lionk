@@ -119,11 +119,12 @@
     import { marked } from '../utils/markedHelper'
 
     import { BIconCardImage, BIconCardText } from 'bootstrap-vue'
+    import { createBlog, createImageBlog, getMyCommunity } from '../server/api';
 
 
     export default {
         mounted() {
-            axios.get('/community/my').then(response => {
+            getMyCommunity().then(response => {
                 // console.log(response.data)
                 let options = [];
                 for (const item of response.data) {
@@ -163,9 +164,9 @@
              * submit at post tab
              */
             onSubmit(evt) {
-                console.log(this.form)
-                axios.post('/blog/add', this.form).then(response => {
-                    console.log(response.data);
+                // console.log(this.form)
+                createBlog(this.form).then(response => {
+                    // console.log(response.data);
                     this.form = {};
                     this.showAlert();
                     // this.success();
@@ -194,7 +195,7 @@
                 formData.append('image', this.form.image);
 
                 console.log(formData)
-                axios.post('/blog/addImg', formData, headers).then(response => {
+                createImageBlog(formData).then(response => {
                     console.log(response.data);
                     this.form = {};
                     this.showAlert();
