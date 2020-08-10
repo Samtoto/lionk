@@ -45,6 +45,7 @@
 <script>
 
 import { marked } from '../utils/markedHelper'
+import { joinCommunityToggle, getAllBlogs } from '../server/api';
 
 export default {
     data() {
@@ -62,14 +63,14 @@ export default {
             window.location.href="/blog/show/" + id
         },
         joinCommunity: function(community_id) {
-            axios.get('/community/change_status/'+community_id).then(response => {
+            joinCommunityToggle(community_id).then(response => {
                 // TODO if joined show joined button
                 // when hover on show leave button
                 this.all();
             });
         },
         all: function() {
-            axios.get('/blog/all').then(response => {
+            getAllBlogs().then(response => {
                 // console.log(response.data);
                 this.cards = response.data;
             });
