@@ -22,9 +22,10 @@
 </template>
 
 <script>
+import { getALlCommunity, joinCommunityToggle } from '../server/api';
 export default {
     mounted: function() {
-        axios.get('/community/all').then(response => {
+        getALlCommunity().then(response => {
             this.cards = response.data;
         })
     },
@@ -35,7 +36,7 @@ export default {
     },
     methods: {
         join: function(id) {
-            axios.get('/community/change_status/'+id).then(response => {
+            joinCommunityToggle(id).then(response => {
                 this.cards = response.data;
             }).catch(error => {
                 window.location.href = '/login';

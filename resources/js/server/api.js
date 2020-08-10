@@ -48,6 +48,12 @@ export const joinCommunityToggle = (community_id, data={}) => axios({
     data
 })
 
+export const getALlCommunity = data => axios({
+    url: '/community/all',
+    method: 'get',
+    data
+})
+
 
 /* comment */
 
