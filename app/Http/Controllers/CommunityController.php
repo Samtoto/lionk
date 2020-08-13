@@ -42,7 +42,18 @@ class CommunityController extends Controller
         $communities = Community::with(['user'=> function ($query) {
             $query->where('user_id', Auth::id());
         }])->get();
-        
+
+
+        foreach ($communities as $community) {
+            $community->joined = false;
+
+            if ($community->user->isNotEmpty()) {
+                // \Debugbar::info($community->user->isEmpty());
+                $community->joined = true;
+            }
+
+            unset($community->user);
+        }
         \Debugbar::info($communities->toArray());
         // dump($communities->toJson(JSON_PRETTY_PRINT));
         return response()->json($communities, 200);

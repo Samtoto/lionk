@@ -11,36 +11,7 @@
                         </b-input-group-append>
                     </b-input-group>
                 </b-row>
-                <b-row class="py-2" 
-                    v-for="card in cards" :key="card.id"
-                >
-                    <b-card style="width:100%" no-body>
-                        <b-card-header
-                            header-bg-variant="transparent"
-                        >
-                            <small style="font-size:60%">
-                                {{ card.community.name ? card.community.name : '' }} • Posted by {{card.user.name}} • {{timeFormatter(card.created_at)}} 
-                                <b-button
-                                    variant="primary"
-                                    @click="joinCommunity(card.community.id)"
-                                    v-if="card.community.user.length==0"
-                                    size="sm"
-                                > Join </b-button>
-                            </small>
-                        </b-card-header>
-                        <b-card-body>
-                            <b-card-title>{{ card.title}} </b-card-title>
-                            <b-card-img-lazy v-show="card.img_path" :src="card.img_path?card.img_path:''"></b-card-img-lazy>
-                            <b-card-text v-html="card.content?card.content:''"></b-card-text>
-                        </b-card-body>
-                        <!-- <b-link :to="{ path: 'reply', query: { blog_id: card.id } }" class="btn btn-primary">reply</b-link> -->
-                        <b-card-footer
-                            
-                        >
-                            <b-button @click="reply(card.id)" size="sm" variant="primary"> {{ card.comment_count }} comment{{(card.comment_count<=1)?'': 's'}}</b-button>
-                        </b-card-footer>
-                    </b-card>
-                </b-row>
+                <BlogList></BlogList>
             </b-col>
 
             <b-col md="3" class="px-5">
@@ -83,31 +54,24 @@
 
 <script>
 
-import { marked } from '../utils/markedHelper'
 
 import { BIconCardImage } from 'bootstrap-vue'
 
-import { timeFormatter } from '../utils/helpers'
+import { joinCommunityToggle } from '../server/api'
 
-import { getAllBlogs, joinCommunityToggle } from '../server/api'
-
+import store from '../store'
+import BlogList from './Blogs/List'
 
 export default {
+    store,
     data() {
-        return {
-            cards: {},
-            marked: marked
-        }
+        return {}
     },
     mounted() {
-        console.log('mounted');
-        this.all();
-
     },
+    components: { BlogList },
     methods: {
-        reply: function(id) {
-            window.location.href = "/blog/show/" + id
-        },
+        
         joinCommunity: function(community_id) {
             joinCommunityToggle(community_id).then(response => {
                 // TODO if joined show joined button
@@ -117,14 +81,10 @@ export default {
             });
         },
         all() {
-            getAllBlogs().then(response => {
-                this.cards = response.data
-            });
         },
         add: function() {
             window.location.href = "/blog/add";
-        },
-        timeFormatter: timeFormatter
+        }
     }
 }
 </script>
