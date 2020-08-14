@@ -110,6 +110,12 @@ export const showComment = (blog_id, data={}) => axios({
     data
 })
 
+export const getCommentsByBlogId = (blog_id, data={}) => axios({
+    url: `/blog/`+blog_id+`/comment`,
+    method: 'get',
+    data
+})
+
 export const createSubComment = data => axios({
     url: '/comment/add_sub',
     method: 'post',

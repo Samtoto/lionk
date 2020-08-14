@@ -39,6 +39,9 @@
                         <!-- <p>login & register</p> -->
                     </div>
                 </b-card>
+                <p> new </p>
+                <CommentsList :blogId="Number(form.blog_id)"></CommentsList>
+                <p> old </p>
 
                 <ul style="list-style: none; background:#fff">
                     <tree-item v-for="(comment, index) in treeData" :key="index" :comment="comment" :user_id="user_id"></tree-item>
@@ -68,6 +71,8 @@
 import { marked } from '../utils/markedHelper'
 import { timeFormatter } from '../utils/helpers';
 import { createComment, showComment, createSubComment, editComment, deleteComment, deleteBlog, updateComment } from '../server/api';
+
+import CommentsList from './Comments/List'
 
 const bus = new Vue({});
 var Reply = Vue.component('Reply', {
@@ -285,6 +290,7 @@ export default {
         });
 
     },
+    components: { CommentsList },
     methods: {
         reply: function(id) {
             // this.form.blog_id ;

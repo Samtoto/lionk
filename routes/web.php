@@ -30,6 +30,8 @@ Route::prefix('blog')->group(function () {
     Route::get('/{blog_id}/edit', 'BlogController@edit')->where(['blog_id' => '[0-9]+']);
     Route::put('/{blog_id}', 'BlogController@update')->where(['blog_id' => '[0-9]+']);
     Route::delete('/{blog_id}', 'BlogController@delete')->where(['blog_id' => '[0-9]+']);
+
+    Route::get('/{blog}/comment', 'CommentController@index')->where(['blog' => '[0-9]+']);
 });
 
 Route::prefix('comment')->group(function () {

@@ -76,6 +76,15 @@ class CommentController extends Controller
         return response()->json($blog[0], 200);
     }
 
+    public function index(Request $request)
+    {
+        $blog_id = $request->blog;
+        $commentModel = new Comment();
+        $comments = $commentModel->getByBlogId($blog_id);
+        \Debugbar::info($comments->toArray());
+        return response()->json($comments, 200);
+    }
+
     public function edit(Request $request)
     {
         if (Auth::check()) {
