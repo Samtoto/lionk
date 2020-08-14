@@ -71,17 +71,6 @@ export default {
     },
     components: { BlogList },
     methods: {
-        
-        joinCommunity: function(community_id) {
-            joinCommunityToggle(community_id).then(response => {
-                // TODO if joined show joined button
-                // when hover on show leave button.
-                // TODO do not request all blogs, only change the community button
-                this.all()
-            });
-        },
-        all() {
-        },
         add: function() {
             window.location.href = "/blog/add";
         }
