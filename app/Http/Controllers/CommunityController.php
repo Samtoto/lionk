@@ -24,9 +24,20 @@ class CommunityController extends Controller
         $community = Community::find($community_id);
         // Join or unjoin the community
         $community->user()->toggle($user);
+        $community = Community::where('id', $community_id)->with(['user' => function ($query) {
+            $query->where('user_id', Auth::id())->exists();
+        }])->get()[0];
+        if ($community->user->isNotEmpty()) {
+            $community->joined = true;
+        } else {
+            $community->joined = false;
+        }
+        unset($community->user);
+        \Debugbar::info($community->toArray());
 
+        return response()->json($community, 200);
         // return response()->json(['join_status'=>'changed'], 200);
-        return $this->all($request);
+
     }
 
     /**

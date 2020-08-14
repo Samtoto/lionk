@@ -1,7 +1,7 @@
 <template>
     <b-button
         :variant="buttonVariant"
-        @click="joinCommunityToggle()"
+        @click="JOIN_TOGGLE(communityId)"
         size="sm"
     > {{ buttonText }} </b-button>
 </template>
@@ -35,9 +35,12 @@ export default {
         }
     },
     methods: {
-        joinCommunityToggle() {
-            this.$store.dispatch('communities/JOIN_TOGGLE', this.communityId)
-        },
+        ...mapActions({
+            JOIN_TOGGLE: 'communities/JOIN_TOGGLE'
+        }),
+        // joinCommunityToggle() {
+        //     this.$store.dispatch('communities/JOIN_TOGGLE', this.communityId)
+        // },
     },
     computed: {
         // getStatus: function() {

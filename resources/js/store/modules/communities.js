@@ -17,8 +17,9 @@ const getters = {
 const actions = {
     JOIN_TOGGLE({commit, getters}, community_id) {
         joinCommunityToggle(community_id).then(response => {
-            let community = getters.getById(community_id);
-            commit('changeStatus', community)
+            // let community = getters.getById(community_id);
+            // let community = response.data;
+            commit('changeStatus', response.data)
         })
     },
     INIT({commit}) {
@@ -30,9 +31,15 @@ const actions = {
 }
 
 const mutations = {
-    changeStatus(state, com) {
-        let changeCommunity = state.all.find(community => community.id == com.id)
-        changeCommunity.joined = !changeCommunity.joined;
+    changeStatus(state, community) {
+        const index = state.all.findIndex(communityItem => communityItem.id === community.id);
+        console.log(index)
+        console.log(community)
+        if (index !== -1) {
+            state.all.splice(index, 1, community)
+        }
+        // let changeCommunity = state.all.find(community => community.id == com.id)
+        // changeCommunity.joined = !changeCommunity.joined;
         // change.name = '122211'
         // console.log(change.joined)
 
