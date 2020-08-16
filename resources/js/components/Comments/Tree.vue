@@ -17,11 +17,11 @@
                     <b-button size="sm">id: {{ comment.id }}</b-button>
                     <b-button size="sm">{{ comment.user ? comment.user.name : '' }}</b-button>
                     <b-button size="sm">parent_id: {{ comment.parent_id ? comment.parent_id : 'null' }}</b-button>
-                    <b-button size="sm" @click="toggle" variant="primary" v-show="user_id">reply</b-button>
+                    <b-button size="sm" @click="toggle" variant="primary" v-show="logined()">reply</b-button>
                     <!-- <b-button size="sm" @click="toggleEdit" variant="warning" v-show="user_id==comment.user.id">Edit</b-button> -->
-                    <!-- <b-button size="sm" @click="deleteComment(comment.id)" variant="danger" v-show="user_id==comment.user.id">Delete</b-button>
-                    <b-button size="sm" variant="primary" v-show="!user_id" to="/login">Login</b-button>
-                    <b-button size="sm" variant="primary" v-show="!user_id" to="/register">Register</b-button> -->
+                    <!-- <b-button size="sm" @click="deleteComment(comment.id)" variant="danger" v-show="user_id==comment.user.id">Delete</b-button> -->
+                    <b-button size="sm" variant="primary" v-show="!logined()" to="/login">Login</b-button>
+                    <b-button size="sm" variant="primary" v-show="!logined()" to="/register">Register</b-button>
 
                     <!-- <Reply @toggle="toggle" v-show="isOpen" :parent_id="comment.id"> </Reply> -->
                 </small>
@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
 export default {
     name: 'CommentsTree',
     props: {
@@ -46,11 +47,19 @@ export default {
         }
     },
     computed: {
+        ...mapState({
+            logined_user: state => state.user.profile
+        })
     },
     methods: {
         toggle(e) {
             console.log('reply toggle')
+        },
+        logined() {
+            return Object.keys(this.logined_user).length > 0;
         }
+    },
+    created() {
     }
 }
 </script>

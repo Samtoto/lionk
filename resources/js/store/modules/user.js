@@ -1,7 +1,7 @@
 import { getProfile } from '../../server/api';
 
 const state = () => ({
-    profile = {}
+    profile: {}
 });
 
 const getters = {

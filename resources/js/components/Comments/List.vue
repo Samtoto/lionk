@@ -22,6 +22,7 @@ export default {
     components: { CommentsTree },
     created() {
         this.$store.dispatch('comments/INIT', this.blogId)
+        this.$store.dispatch('user/INIT')
     },
     methods: {
         showComments () {
