@@ -54,6 +54,9 @@ Route::prefix('community')->group(function () {
     Route::get('/{community_id}', 'CommunityController@show')->where(['community_id', '[0-9]+']);
 });
 
+Route::prefix('user')->group(function () {
+    Route::get('/profile', 'UserProfileController@show');
+});
 
 Route::get('/', function() {
     return view('show');

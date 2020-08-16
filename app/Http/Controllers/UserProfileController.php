@@ -10,7 +10,7 @@ use App\Blog;
 use App\Comment;
 use App\User;
 
-class UserInfoController extends Controller
+class UserProfileController extends Controller
 {
     public function config(Request $request) {
         // 
@@ -55,5 +55,10 @@ class UserInfoController extends Controller
         // get all blogs with user relation
         $blogs = Blog::with('user')->get();
         return $blogs;
+    }
+
+    public function show(Request $request)
+    {
+        return response()->json(Auth::user(), 200);
     }
 }

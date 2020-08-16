@@ -139,3 +139,11 @@ export const updateComment = (comment_id, data) => axios({
     method: 'put',
     data
 })
+
+/* User */
+
+export const getProfile = (data) => axios({
+    url: '/user/profile',
+    method: 'get',
+    data
+})
