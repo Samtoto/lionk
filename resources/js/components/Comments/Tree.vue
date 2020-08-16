@@ -8,31 +8,40 @@
         <li v-for="comment in comments" :key="comment.id">
             <b-card border-variant="light">
             <keep-alive>
+                <!-- content -->
                 <b-card-text v-html="comment.content"></b-card-text>
-                <!-- <EditComment @toggleEdit="toggleEdit" v-if="isEdit" :comment="comment" :user_id="user_id"></EditComment> -->
+                <!-- edit editor -->
+                <!-- <EditComment v-if="editing === comment.id" :comment="comment"></EditComment> -->
             </keep-alive>
             <b-card-text>
                 <small>
+                    <!-- Useful info -->
                     <b-button size="sm">id: {{ comment.id }}</b-button>
                     <b-button size="sm">{{ comment.user ? comment.user.name : '' }}</b-button>
                     <b-button size="sm">parent_id: {{ comment.parent_id ? comment.parent_id : 'null' }}</b-button>
-                    <b-button size="sm" @click="toggle" variant="primary" v-show="logined()">reply</b-button>
+                    <!-- Reply button -->
+                    <b-button size="sm" @click="toggleReply(comment.id)" variant="primary" v-show="logined()">reply</b-button>
+                    <!-- Edit button -->
                     <b-button size="sm" @click="toggleEdit" variant="warning" v-show="logined() &&logined_user.id==comment.user.id">Edit</b-button>
+                    <!-- Delete button -->
                     <b-button size="sm" variant="danger" v-show="logined() &&logined_user.id==comment.user.id">Delete</b-button>
+                    <!-- Not login, login button -->
                     <b-button size="sm" variant="primary" v-show="!logined()" to="/login">Login</b-button>
+                    <!-- Not login, register button -->
                     <b-button size="sm" variant="primary" v-show="!logined()" to="/register">Register</b-button>
-
-                    <!-- <Reply @toggle="toggle" v-show="isOpen" :parent_id="comment.id"> </Reply> -->
+                    <!-- reply editor -->
+                    <!-- <Reply v-show="replying === comment.id" :parent_id="comment.id"> </Reply> -->
                 </small>
             </b-card-text>
             </b-card>
+                <!-- recursive show comments -->
                 <CommentsTree :comments="comment.all_children"></CommentsTree>
         </li>
     </ul>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapMutations } from 'vuex'
 export default {
     name: 'CommentsTree',
     props: {
@@ -43,19 +52,24 @@ export default {
     },
     computed: {
         ...mapState({
-            logined_user: state => state.user.profile
+            logined_user: state => state.user.profile,
+            editing: state => state.comments.editing,
+            replying: state => state.comments.replying
         })
     },
     methods: {
-        toggle(e) {
-            console.log('reply toggle')
-        },
         logined() {
             return Object.keys(this.logined_user).length > 0;
         },
-        toggleEdit() {
+        toggleEdit(comment_id) {
             console.log('editor toggle')
-        }
+        },
+        ...mapActions({
+            
+        }),
+        ...mapMutations({
+            toggleReply: 'comments/toggleReply'
+        })
     },
     created() {
     }

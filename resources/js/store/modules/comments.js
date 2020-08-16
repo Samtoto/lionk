@@ -40,7 +40,9 @@ const list_to_tree = function (list) {
 }
 
 const state = () => ({
-    all: []
+    all: [],
+    editing: 0,
+    replying: 0
 });
 
 const getters = {
@@ -60,6 +62,13 @@ const mutations = {
     init(state, comments) {
         state.all = list_to_tree(comments)
     },
+    toggleReply(state, comment_id) {
+        if (comment_id === state.replying) {
+            state.replying = 0
+        } else {
+            state.replying = comment_id
+        }
+    }
 }
 
 export default {
