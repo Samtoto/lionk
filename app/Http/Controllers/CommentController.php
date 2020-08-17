@@ -13,30 +13,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
-use League\CommonMark\CommonMarkConverter;
-use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
-use League\CommonMark\Environment;
 
 class CommentController extends Controller
 {
-
-    /**
-     * parse comments' content by commonmark through recursive
-     *
-     * @param \Illuminate\Database\Eloquent\Collection $comments
-     * @param \League\CommonMark\CommonMarkConverter $commonMark
-     * @return void
-     */
-    private function recursiveParseContent(\Illuminate\Database\Eloquent\Collection $comments, \League\CommonMark\CommonMarkConverter $commonMark)
-        : void
-    {
-        foreach ($comments as $comment) {
-            $comment->content = $commonMark->convertToHtml($comment->content);
-            if ($comment->allChildren) {
-                $this->recursiveParseContent($comment->allChildren, $commonMark);
-            }
-        }
-    }
 
     /**
      * Get blog by blog_id
@@ -54,23 +33,9 @@ class CommentController extends Controller
         \Debugbar::info($blog[0]->toArray());
         // \Debugbar::info($blog[0]->img_path);
 
-        $environment = Environment::createCommonMarkEnvironment();
-        $environment->addExtension(new GithubFlavoredMarkdownExtension());
-
-        $commonMark = new CommonMarkConverter(
-            ['html_input' => 'strip', 'allow_unsafe_links' => false],
-            $environment
-        );
 
         if ($blog[0]->img_path) {
             $blog[0]->img_path = Storage::disk('public_uploads')->url($blog[0]->img_path);
-        }
-        if ($blog[0]->content) {
-            $blog[0]->content = $commonMark->convertToHtml($blog[0]->content);
-            // $blog[0]->content .= ' parsed by commonmark';
-        }
-        if ($blog[0]->comment) {
-            $this->recursiveParseContent($blog[0]->comment, $commonMark);
         }
         // \Debugbar::info($blog[0]->comment);
         return response()->json($blog[0], 200);
@@ -106,17 +71,6 @@ class CommentController extends Controller
                 ]);
                 $comment->content = $request->content;
                 $comment->save();
-
-                // parse markdown
-                $environment = Environment::createCommonMarkEnvironment();
-                $environment->addExtension(new GithubFlavoredMarkdownExtension());
-
-                $commonMark = new CommonMarkConverter(
-                    ['html_input' => 'strip', 'allow_unsafe_links' => false],
-                    $environment
-                );
-                $comment->content = $commonMark->convertToHtml($comment->content);
-                // parse done
 
                 return response()->json($comment, 200);
             } 
@@ -172,18 +126,10 @@ class CommentController extends Controller
         $comment->blog_id = $request->blog_id;
         $comment->save();
 
-        $environment = Environment::createCommonMarkEnvironment();
-        $environment->addExtension(new GithubFlavoredMarkdownExtension());
-
-        $commonMark = new CommonMarkConverter(
-            ['html_input' => 'strip', 'allow_unsafe_links' => false],
-            $environment
-        );
 
         // Recursive get comments and children comments
         $comment = Comment::where('id', $comment->id)->with(['allChildren', 'user'])->get();
 
-        $comment[0]->content = $commonMark->convertToHtml($comment[0]->content);
         \Debugbar::info($comment[0]);
         return response()->json($comment[0], 200);
         // return $this->show($request);

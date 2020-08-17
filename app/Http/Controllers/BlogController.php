@@ -9,9 +9,6 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
-use League\CommonMark\CommonMarkConverter;
-use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
-use League\CommonMark\Environment;
 
 class BlogController extends Controller
 {
@@ -141,21 +138,9 @@ class BlogController extends Controller
                 }]);
             }])->withCount('comment')->get();
         }
-
-        $environment = Environment::createCommonMarkEnvironment();
-        $environment->addExtension(new GithubFlavoredMarkdownExtension());
-
-        $commonMark = new CommonMarkConverter(
-            ['html_input' => 'strip', 'allow_unsafe_links' => false],
-            $environment
-        );
-
-        foreach ($blogs as $key => $blog) {
+        foreach ($blogs as $blog) {
             if ($blog->img_path) {
                 $blog->img_path = Storage::disk('public_uploads')->url($blog->img_path);
-            }
-            if ($blog->content) {
-                $blog->content = $commonMark->convertToHtml($blog->content);
             }
         }
 

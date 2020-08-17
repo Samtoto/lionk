@@ -9,7 +9,7 @@
             <b-card border-variant="light">
             <keep-alive>
                 <!-- content -->
-                <b-card-text v-html="comment.content"></b-card-text>
+                <b-card-text v-html="comment.markdown_content"></b-card-text>
                 <!-- edit editor -->
                 <!-- <EditComment v-if="editing === comment.id" :comment="comment"></EditComment> -->
             </keep-alive>
@@ -24,7 +24,7 @@
                     <!-- Edit button -->
                     <b-button size="sm" @click="toggleEdit" variant="warning" v-show="logined() && comment.user && logined_user.id==comment.user.id">Edit</b-button>
                     <!-- Delete button -->
-                    <b-button size="sm" variant="danger" v-show="logined() && comment.user && logined_user.id==comment.user.id">Delete</b-button>
+                    <b-button size="sm" variant="danger" @click="deleteComment(comment.id)" v-show="logined() && comment.user && logined_user.id==comment.user.id">Delete</b-button>
                     <!-- Not login, login button -->
                     <b-button size="sm" variant="primary" v-show="!logined()" to="/login">Login</b-button>
                     <!-- Not login, register button -->
@@ -66,6 +66,9 @@ export default {
         },
         toggleEdit(comment_id) {
             console.log('editor toggle')
+        },
+        deleteComment(comment_id) {
+            console.log('delete comment id: '+ comment_id)
         },
         ...mapActions({
             

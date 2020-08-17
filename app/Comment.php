@@ -12,6 +12,11 @@ class Comment extends Model
 {
     use SoftDeletes;
     protected $fillable = ['title'];
+    protected $appends = ['markdown_content'];
+
+    public $markdownAccessor = true;
+
+    private $_DELETED_TEXT = 'The comment has been removed.';
 
     public function blog()
     {
@@ -54,9 +59,23 @@ class Comment extends Model
     public function getByBlogId($blog_id)
     {
         $comments = Comment::select(
-            ['id', 'content', 'created_at', 'blog_id', 'parent_id', 'user_id']
+            ['id', 'content', 'created_at', 'blog_id', 'parent_id', 'user_id', 'deleted_at']
         )->where('blog_id', $blog_id)->with(['user'])->get();
 
+        return $comments;
+    }
+
+    public function getContentAttribute($value)
+    {
+        if ($this->attributes['deleted_at']) {
+            return $this->_DELETED_TEXT;
+        } else {
+            return $value;
+        }
+    }
+
+    public function getMarkdownContentAttribute()
+    {
         $environment = Environment::createCommonMarkEnvironment();
         $environment->addExtension(new GithubFlavoredMarkdownExtension());
 
@@ -65,9 +84,6 @@ class Comment extends Model
             $environment
         );
 
-        foreach ($comments as $comment) {
-            $comment->content = $commonMark->convertToHtml($comment->content);
-        }
-        return $comments;
+        return $commonMark->convertToHtml($this->attributes['content']);
     }
 }

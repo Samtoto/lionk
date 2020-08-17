@@ -15,7 +15,7 @@
             <b-card-body>
                 <b-card-title>{{ card.title}} </b-card-title>
                 <b-card-img-lazy v-show="card.img_path" :src="card.img_path?card.img_path:''"></b-card-img-lazy>
-                <b-card-text v-html="card.content?card.content:''"></b-card-text>
+                <b-card-text v-html="card.markdown_content?card.markdown_content:''"></b-card-text>
             </b-card-body>
             <!-- <b-link :to="{ path: 'reply', query: { blog_id: card.id } }" class="btn btn-primary">reply</b-link> -->
             <b-card-footer
