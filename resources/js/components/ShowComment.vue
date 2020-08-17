@@ -3,17 +3,13 @@
         <b-row class="d-flex justify-content-center">
             <b-col cols="6" md="6" class="px-1">
                 <b-card style="width:100%">
-                    <!-- prevent error alike https://stackoverflow.com/questions/52751705/vue-warning-when-accessing-nested-object -->
                     <b-card-title>{{ card.title }} <small style="font-size:60%">• Posted by {{ card.user ? card.user.name : '' }} • {{timeFormatter(card.created_at)}}</small></b-card-title>
                     <b-card-text v-html="card.content?card.content:''"></b-card-text>
                     <b-card-img-lazy v-show="card.img_path?card.img_path:''" :src="card.img_path?card.img_path:''"></b-card-img-lazy>
-                    <!-- <b-button>reply</b-button> -->
-                    <!-- <textarea></textarea> -->
-                    <div v-show="user_id">
-                        <b-button size="sm" @click="editBlog" v-show="card.user.id == user_id">Edit</b-button>
-                        <b-button size="sm" @click="deleteBlog(form.blog_id)" v-show="card.user.id == user_id">Delete</b-button>
+                    <div v-show="logined()">
+                        <b-button size="sm" @click="deleteBlog(form.blog_id)" v-show="canDelete()">Delete</b-button>
                         <hr />
-                        <p>Comment as ???</p>
+                        <p>Comment as {{ logined_user.name }}</p>
                         <b-card no-body>
                             <b-tabs card>
                                 <b-tab title="Edit" active>
@@ -30,22 +26,16 @@
                                 </b-tab>
                             </b-tabs>
                         </b-card>
-                        <b-button block variant="outline-primary" @click="reply">Comment</b-button>
+                        <b-button block variant="outline-primary">Comment</b-button>
                     </div>
-                    <div v-show="!user_id">
+                    <div v-show="!logined()">
                         <b-card-text><p style="text-align:left;color: gray"><br />Wanna reply a comment?<br />
                             <b-link to="/login">Login</b-link> or <b-link to="/register">Register</b-link></p>
                         </b-card-text>
                         <!-- <p>login & register</p> -->
                     </div>
                 </b-card>
-                <p> new </p>
-                <CommentsList :blogId="Number(form.blog_id)"></CommentsList>
-                <p> old </p>
-
-                <ul style="list-style: none; background:#fff">
-                    <tree-item v-for="(comment, index) in treeData" :key="index" :comment="comment" :user_id="user_id"></tree-item>
-                </ul>
+                <CommentsList :blogId="Number(blog_id)"></CommentsList>
             </b-col>
             <b-col md="3" class="px-5">
                 <b-row class="py-1">
@@ -70,201 +60,26 @@
 <script>
 import { marked } from '../utils/markedHelper'
 import { timeFormatter } from '../utils/helpers';
-import { createComment, showComment, createSubComment, editComment, deleteComment, deleteBlog, updateComment } from '../server/api';
+import { showComment, deleteBlog } from '../server/api';
 
 import CommentsList from './Comments/List'
 
-const bus = new Vue({});
-var Reply = Vue.component('Reply', {
-    template: `<b-form>
-        <b-card no-body>
-            <b-tabs card>
-                <b-tab title="Edit" active>
-                    <b-form-textarea
-                    v-model.trim="content"
-                    placeholder="Enter something..."
-                    rows="3"
-                    max-rows="6"
-                    ></b-form-textarea>
-                </b-tab>
-                <b-tab title="Preview">
-                    <b-card-text v-html="marked(content)"></b-card-text>
-                </b-tab>
-            </b-tabs>
-        </b-card>
-        <b-button variant="outline-info" @click="submit" size="sm">Comment</b-button>
-        </b-form>`,
-    methods: {
-        submit: function () {
-            // console.log('submit Reply', this.content, this.parent_id)
-            let subComment = {
-                comment_id: this.parent_id,
-                blog_id: document.querySelector('#blog_id').value,
-                comment: this.content
-            }
-            let newComment = {}
-            createSubComment(subComment).then(response => {
-                // console.log(response.data);
-                newComment = response.data
-                bus.$emit("comment-bus", newComment)
-                this.content = ''
-                this.$emit('toggle')
-            })
-
-            
-        }
-    },
-    mounted () {},
-    data () {
-        return {
-            content: '',
-            marked: marked
-        }
-    },
-    props: {
-        parent_id: Number
-    }
-})
-
-Vue.component('EditComment', {
-    template: `<b-form>
-        <b-card no-body>
-            <b-tabs card>
-                <b-tab title="Edit" active>
-                    <b-form-textarea
-                    v-model.trim="editComment.content"
-                    placeholder="Enter something..."
-                    rows="3"
-                    max-rows="6"
-                    ></b-form-textarea>
-                </b-tab>
-                <b-tab title="Preview">
-                    <b-card-text v-html="marked(editComment.content)"></b-card-text>
-                </b-tab>
-            </b-tabs>
-        </b-card>
-        <b-button variant="outline-info" @click="submit" size="sm">Update Comment</b-button>
-    </b-form>`,
-    props: {
-        comment: Object
-    },
-    activated() {
-        editComment(this.comment.id).then(response => {
-            this.editComment.content = response.data.content
-            this.editComment.comment_id = response.data.id
-            // console.log(response.data)
-        })
-    },
-    data() {
-        return {
-            editComment: {
-                comment_id: '',
-                content: '',
-            },
-            marked: marked
-        }
-    },
-    methods: {
-        submit: function() {
-            let formData = this.editComment;
-            axios.put('/comment/'+this.editComment.comment_id, formData)
-            updateComment().then(response => {
-                let updatedComment = response.data
-                bus.$emit("comment-update-bus", updatedComment)
-                this.content = ''
-                this.$emit('toggleEdit')
-            })
-        }
-    }
-})
-
-Vue.component('tree-item', {
-    template: `
-    <li style="">
-        <b-card border-variant="light">
-        <keep-alive>
-        <b-card-text v-html="comment.content" v-if="!isEdit">
-        </b-card-text>
-        <EditComment @toggleEdit="toggleEdit" v-if="isEdit" :comment="comment" :user_id="user_id"></EditComment>
-        </keep-alive>
-        <b-card-text>
-            <small>
-                <b-button size="sm">id: {{ comment.id }}</b-button>
-                <b-button size="sm">{{ comment.user ? comment.user.name : '' }}</b-button>
-                <b-button size="sm">parent_id: {{ comment.parent_id ? comment.parent_id : 'null' }}</b-button>
-                <b-button size="sm" @click="toggle" variant="primary" v-show="user_id">reply</b-button>
-                <b-button size="sm" @click="toggleEdit" variant="warning" v-show="user_id==comment.user.id">Edit</b-button>
-                <b-button size="sm" @click="deleteComment(comment.id)" variant="danger" v-show="user_id==comment.user.id">Delete</b-button>
-                <b-button size="sm" variant="primary" v-show="!user_id" to="/login">Login</b-button>
-                <b-button size="sm" variant="primary" v-show="!user_id" to="/register">Register</b-button>
-
-                <Reply @toggle="toggle" v-show="isOpen" :parent_id="comment.id"> </Reply>
-            </small>
-        </b-card-text>
-        </b-card>
-        <ul style="list-style: none;" v-if="comment.all_children">
-            <tree-item v-for="(comment, index) in comment.all_children" :key="index" :comment="comment" :user_id="user_id" @reply-comment="$emit('reply-comment', comment, content)">
-            </tree-item>
-        </ul>
-    </li>`,
-    props: {
-        comment: Object,
-        user_id: String,
-    },
-    data: function () {
-        return {
-            isOpen: false,
-            content: '',
-            marked: marked,
-            isEdit: false
-        }
-    },
-    methods: {
-        toggle: function() {
-            this.isOpen = !this.isOpen;
-            
-        },
-        toggleEdit: function() {
-            this.isEdit = !this.isEdit;
-        },
-        deleteComment: function(comment_id) {
-            
-            // this.deleteConfirm = ''
-            this.$bvModal.msgBoxConfirm('Please confirm that you want to delete the comment.', {
-                title: 'Please Confirm',
-                size: 'sm',
-                buttonSize: 'sm',
-                okVariant: 'danger',
-                okTitle: 'YES',
-                cancelTitle: 'NO',
-                footerClass: 'p-2',
-                hideHeaderClose: false,
-                centered: true
-            })
-            .then(value => {
-                // this.deleteConfirm = value
-                if (value) {
-                    let formData = new FormData()
-                    formData.append('comment_id', comment_id)
-                    deleteComment(comment_id, formData).then(response => {
-                        // console.log(comment_id)
-                        bus.$emit('comment-delete-bus', comment_id);
-                    })
-                }
-            })
-            .catch(err => {
-                // An error occurred
-            })
-            
-        }
-    }
-})
+import store from '../store'
+import { mapState } from 'vuex';
 
 export default {
     data() {
         return {
             user_id: document.getElementById('user').value,
-            card: {},
+            card: {
+                user: {
+                    id: '',
+                    name: '',
+                },
+                title: '',
+                content: '',
+                created_at: '',
+            },
             treeData: {},
             form: {
                 comment: '',
@@ -275,11 +90,14 @@ export default {
             marked: marked
         }
     },
+    props: {
+        blog_id: Number
+    },
+    store,
     mounted() {
         // console.log(this.user_id)
-        let blog_id = document.querySelector('#blog_id').value;
-        this.form.blog_id = blog_id;
-        showComment(blog_id).then(response => {
+        this.form.blog_id = this.blog_id;
+        showComment(this.blog_id).then(response => {
             // console.log(response.data);
             this.card = response.data;
             this.treeData = this.card.comment
@@ -290,129 +108,34 @@ export default {
         });
 
     },
+    computed: {
+        ...mapState({
+            logined_user: state => state.user.profile
+        })
+    },
     components: { CommentsList },
     methods: {
-        reply: function(id) {
-            // this.form.blog_id ;
-            createComment(this.form).then(response => {
-                this.card = response.data;
-                this.treeData = this.card.comment
-                this.blogOwner = this.card.user
-                this.form.comment = null
-            });
-        },
-        addChild(newComment, comments) {
-            if (comments.length == 0) {
-                return;
-            }
-            // console.log(comments);
-            // return;
-            for (var comment of comments) {
-                
-                if (comment.id == newComment.parent_id) {
-                    console.log('found it')
-                    if (comment.hasOwnProperty('all_children')) {
-                        comment.all_children.push(newComment)
-                    } else {
-                        comment.all_children = [newComment]
-                    }
-                    return;
-                }
-                if (comment.hasOwnProperty('all_children')) {
-                    this.addChild(newComment, comment.all_children)
-                } else {
-                    return;
-                }
-            }
-        },
-        addComment: function (newComment) {
-            // console.log(this.card.comment)
-            this.addChild(newComment, this.card.comment)
-            // console.log('submit with busEvent', newComment)
-        },
-        updateChild: function (updatedComment, comments) {
-            if (comments.length == 0) {
-                return false;
-            }
-            for (var comment of comments) {
-                if (comment.id === updatedComment.id) {
-                    console.log('found it & update it!');
-                    // comment = updatedComment // not working
-                    comment.content = updatedComment.content
-                    return;
-                }
-                if (comment.hasOwnProperty('all_children')) {
-                    this.updateChild(updatedComment, comment.all_children)
-                } else {
-                    return;
-                }
-            }
-        },
-        updateComment: function(updatedComment) {
-            this.updateChild(updatedComment, this.card.comment);
-        },
         timeFormatter: timeFormatter,
         editBlog: function() {
             window.location.href = '/blog/' + this.form.blog_id + '/edit';
         },
-        deleteBlog: function(blog_id) {
-            this.deleteConfirm = ''
-            this.$bvModal.msgBoxConfirm('Please confirm that you want to delete the blog.', {
-                title: 'Please Confirm',
-                size: 'sm',
-                buttonSize: 'sm',
-                okVariant: 'danger',
-                okTitle: 'YES',
-                cancelTitle: 'NO',
-                footerClass: 'p-2',
-                hideHeaderClose: false,
-                centered: true
-            })
-            .then(value => {
-                this.deleteConfirm = value
-                if (value) {
-                    let formData = new FormData();
-                    formData.append('blog_id', this.form.blog_id);
-                    deleteBlog(blog_id, formData).then(response => {
-                        location.href = '/';
-                    })
-                }
-            })
-            .catch(err => {
-                // An error occurred
-            })
+        logined: function() {
+            return Object.keys(this.logined_user).length > 0
         },
-        deleteComment(comment_id, comments=this.card.comment) {
-            // console.log('delete process')
-            if ( !comments ) {
-                return ;
+        canEdit: function() {
+            return this.canDelete();
+        },
+        canDelete: function() {
+            if (this.logined_user.id == this.card.user.id) {
+                return true;
             }
-            for (var comment of comments) {
-                if (comment_id === comment.id) {
-                    console.log('found it & delete it')
-                    // TODO
-                    comment.content = 'removed'
-                    // comment = [] // not working
-                    return ;
-                }
-                if (comment.hasOwnProperty('all_children')) {
-                    this.deleteComment(comment_id, comment.all_children)
-                } else {
-                    return;
-                }
-            }
-            return ;
+            return false;
         }
     },
     created () {
-        bus.$on('comment-bus', this.addComment)
-        bus.$on('comment-update-bus', this.updateComment)
-        bus.$on('comment-delete-bus', this.deleteComment)
+        this.$store.dispatch('user/INIT')
     },
     destoryed () {
-        bus.$off('comment-bus', this.addComment)
-        bus.$off('comment-update-bus', this.updateComment)
-        bus.$off('comment-delete-bus', this.deleteComment)
     },
 }
 

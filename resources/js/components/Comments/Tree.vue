@@ -22,15 +22,15 @@
                     <!-- Reply button -->
                     <b-button size="sm" @click="toggleReply(comment.id)" variant="primary" v-show="logined()">reply</b-button>
                     <!-- Edit button -->
-                    <b-button size="sm" @click="toggleEdit" variant="warning" v-show="logined() &&logined_user.id==comment.user.id">Edit</b-button>
+                    <b-button size="sm" @click="toggleEdit" variant="warning" v-show="logined() && comment.user && logined_user.id==comment.user.id">Edit</b-button>
                     <!-- Delete button -->
-                    <b-button size="sm" variant="danger" v-show="logined() &&logined_user.id==comment.user.id">Delete</b-button>
+                    <b-button size="sm" variant="danger" v-show="logined() && comment.user && logined_user.id==comment.user.id">Delete</b-button>
                     <!-- Not login, login button -->
                     <b-button size="sm" variant="primary" v-show="!logined()" to="/login">Login</b-button>
                     <!-- Not login, register button -->
                     <b-button size="sm" variant="primary" v-show="!logined()" to="/register">Register</b-button>
                     <!-- reply editor -->
-                    <!-- <Reply v-show="replying === comment.id" :parent_id="comment.id"> </Reply> -->
+                    <Reply v-show="replying === comment.id" :comment_id="comment.id"> </Reply>
                 </small>
             </b-card-text>
             </b-card>
@@ -42,6 +42,8 @@
 
 <script>
 import { mapActions, mapState, mapMutations } from 'vuex'
+import Reply from './Reply'
+
 export default {
     name: 'CommentsTree',
     props: {
@@ -50,6 +52,7 @@ export default {
     data() {
         return {}
     },
+    components: { Reply },
     computed: {
         ...mapState({
             logined_user: state => state.user.profile,
@@ -71,8 +74,6 @@ export default {
             toggleReply: 'comments/toggleReply'
         })
     },
-    created() {
-    }
 }
 </script>
 

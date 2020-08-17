@@ -1,4 +1,4 @@
-import { getCommentsByBlogId } from '../../server/api';
+import { getCommentsByBlogId, createSubComment } from '../../server/api';
 
 
 const recursiveFind = function (comments, id) {
@@ -41,6 +41,7 @@ const list_to_tree = function (list) {
 
 const state = () => ({
     all: [],
+    blog_id: 0,
     editing: 0,
     replying: 0
 });
@@ -51,8 +52,14 @@ const getters = {
 
 const actions = {
     INIT({ commit }, blog_id) {
+        commit('setBlogId', blog_id)
         getCommentsByBlogId(blog_id).then(response => {
             commit('init', response.data)
+        })
+    },
+    reply({commit}, comment) {
+        createSubComment(comment).then(response => {
+            commit('replyComment', response.data)
         })
     }
 }
@@ -62,12 +69,19 @@ const mutations = {
     init(state, comments) {
         state.all = list_to_tree(comments)
     },
+    setBlogId(state, blog_id) {
+        state.blog_id = blog_id
+    },
     toggleReply(state, comment_id) {
         if (comment_id === state.replying) {
             state.replying = 0
         } else {
             state.replying = comment_id
         }
+    },
+    replyComment(state, comment) {
+        let parentComment = recursiveFind(state.all, comment.parent_id)
+        parentComment.all_children.push(comment)
     }
 }
 

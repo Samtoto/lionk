@@ -164,15 +164,16 @@ class CommentController extends Controller
      */
     public function addSub(Request $request)
     {
+        \Debugbar::info($request->input());
         $comment = new Comment;
         $comment->user_id = Auth::id();
-        $comment->parent_id = $request->comment_id;
-        $comment->content = $request->comment;
+        $comment->parent_id = $request->parent_id;
+        $comment->content = $request->content;
         $comment->blog_id = $request->blog_id;
         $comment->save();
 
         // Recursive get comments and children comments
-        $comment = Comment::where('id', $comment->id)->with(['allChildren'])->get();
+        $comment = Comment::where('id', $comment->id)->with(['allChildren', 'user'])->get();
 
         return response()->json($comment[0], 200);
         // return $this->show($request);
