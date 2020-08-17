@@ -32,6 +32,7 @@ export default {
     data() {
         return {
             comment: {
+                blog_id: 0,
                 content: '',
                 parent_id: this.comment_id,
             },

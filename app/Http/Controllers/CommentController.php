@@ -183,8 +183,8 @@ class CommentController extends Controller
         // Recursive get comments and children comments
         $comment = Comment::where('id', $comment->id)->with(['allChildren', 'user'])->get();
 
-        $comment->content = $commonMark->convertToHtml($comment->content);
-
+        $comment[0]->content = $commonMark->convertToHtml($comment[0]->content);
+        \Debugbar::info($comment[0]);
         return response()->json($comment[0], 200);
         // return $this->show($request);
     }

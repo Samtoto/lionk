@@ -11,7 +11,8 @@
                         <b-button size="sm" @click="deleteBlog(form.blog_id)" v-show="canDelete()">Delete</b-button>
                         <hr />
                         <p>Comment as {{ logined_user.name }}</p>
-                        <b-card no-body>
+                        <Reply :comment_id="null"></Reply>
+                        <!-- <b-card no-body>
                             <b-tabs card>
                                 <b-tab title="Edit" active>
                                     <b-form-textarea
@@ -27,7 +28,7 @@
                                 </b-tab>
                             </b-tabs>
                         </b-card>
-                        <b-button block variant="outline-primary">Comment</b-button>
+                        <b-button block variant="outline-primary">Comment</b-button> -->
                     </div>
                     <div v-show="!logined()">
                         <b-card-text><p style="text-align:left;color: gray"><br />Wanna reply a comment?<br />
@@ -64,6 +65,7 @@ import { timeFormatter } from '../utils/helpers';
 import { showComment, deleteBlog } from '../server/api';
 
 import CommentsList from './Comments/List'
+import Reply from './Comments/Reply'
 
 import store from '../store'
 import { mapState } from 'vuex';
@@ -114,7 +116,7 @@ export default {
             logined_user: state => state.user.profile
         })
     },
-    components: { CommentsList },
+    components: { CommentsList, Reply },
     methods: {
         timeFormatter: timeFormatter,
         editBlog: function() {

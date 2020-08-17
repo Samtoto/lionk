@@ -3,6 +3,9 @@ import { getCommentsByBlogId, createSubComment } from '../../server/api';
 
 const recursiveFind = function (comments, id) {
     // console.log(comments)
+    if (!id) {
+        return null;
+    }
     for (let comment of comments) {
         if (comment.id === id) {
             return comment
@@ -80,8 +83,15 @@ const mutations = {
         }
     },
     replyComment(state, comment) {
+        if (!comment.hasOwnProperty('all_children')) {
+            comment.all_children = {}
+        }
         let parentComment = recursiveFind(state.all, comment.parent_id)
-        parentComment.all_children.push(comment)
+        if (parentComment) {
+            parentComment.all_children.push(comment)
+        } else {
+            state.all.push(comment)
+        }
     }
 }
 
