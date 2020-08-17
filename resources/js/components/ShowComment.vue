@@ -7,6 +7,7 @@
                     <b-card-text v-html="card.content?card.content:''"></b-card-text>
                     <b-card-img-lazy v-show="card.img_path?card.img_path:''" :src="card.img_path?card.img_path:''"></b-card-img-lazy>
                     <div v-show="logined()">
+                        <b-button size="sm" @click="editBlog" v-show="canEdit()">Edit</b-button>
                         <b-button size="sm" @click="deleteBlog(form.blog_id)" v-show="canDelete()">Delete</b-button>
                         <hr />
                         <p>Comment as {{ logined_user.name }}</p>
@@ -123,7 +124,7 @@ export default {
             return Object.keys(this.logined_user).length > 0
         },
         canEdit: function() {
-            return this.canDelete();
+            return this.canDelete(); // same as canDelete()
         },
         canDelete: function() {
             if (this.logined_user.id == this.card.user.id) {

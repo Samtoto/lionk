@@ -172,8 +172,18 @@ class CommentController extends Controller
         $comment->blog_id = $request->blog_id;
         $comment->save();
 
+        $environment = Environment::createCommonMarkEnvironment();
+        $environment->addExtension(new GithubFlavoredMarkdownExtension());
+
+        $commonMark = new CommonMarkConverter(
+            ['html_input' => 'strip', 'allow_unsafe_links' => false],
+            $environment
+        );
+
         // Recursive get comments and children comments
         $comment = Comment::where('id', $comment->id)->with(['allChildren', 'user'])->get();
+
+        $comment->content = $commonMark->convertToHtml($comment->content);
 
         return response()->json($comment[0], 200);
         // return $this->show($request);
