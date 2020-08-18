@@ -1,6 +1,6 @@
 <template>
 
-    <CommentsTree :comments="comments"></CommentsTree>
+    <CommentsTree :parent_id="null"></CommentsTree>
 
 </template>
 
