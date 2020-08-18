@@ -1,4 +1,4 @@
-import { getCommentsByBlogId, createSubComment, deleteComment } from '../../server/api';
+import { getCommentsByBlogId, createSubComment, deleteComment, updateComment } from '../../server/api';
 
 const state = () => ({
     all: [],
@@ -30,6 +30,11 @@ const actions = {
             // console.log(response.data)
             commit('updateComment', response.data)
         })
+    },
+    update({ commit }, comment) {
+        updateComment(comment.id, comment).then(response => {
+            commit('updateComment', response.data)
+        })
     }
 }
 
@@ -46,6 +51,14 @@ const mutations = {
             state.replying = 0
         } else {
             state.replying = comment_id
+        }
+    },
+    toggleEdit(state, comment_id) {
+        console.log('editing: '+comment_id)
+        if (comment_id === state.editing) {
+            state.editing = 0
+        } else {
+            state.editing = comment_id
         }
     },
     replyComment(state, comment) {

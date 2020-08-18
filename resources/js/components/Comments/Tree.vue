@@ -11,7 +11,7 @@
                     <!-- content -->
                     <b-card-text v-html="comment.markdown_content"></b-card-text>
                     <!-- edit editor -->
-                    <!-- <EditComment v-if="editing === comment.id" :comment="comment"></EditComment> -->
+                    <EditComment v-if="editing === comment.id" :comment="comment"></EditComment>
                 </keep-alive>
                 <b-card-text>
                     <small>
@@ -22,7 +22,7 @@
                         <!-- Reply button -->
                         <b-button size="sm" @click="toggleReply(comment.id)" variant="primary" v-show="logined()">reply</b-button>
                         <!-- Edit button -->
-                        <b-button size="sm" @click="toggleEdit" variant="warning" v-show="logined() && comment.user && logined_user.id==comment.user.id">Edit</b-button>
+                        <b-button size="sm" @click="toggleEdit(comment.id)" variant="warning" v-show="logined() && comment.user && logined_user.id==comment.user.id">Edit</b-button>
                         <!-- Delete button -->
                         <b-button size="sm" variant="danger" @click="deleteComment(comment.id)" v-show="logined() && comment.user && logined_user.id==comment.user.id">Delete</b-button>
                         <!-- Not login, login button -->
@@ -43,6 +43,7 @@
 <script>
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex'
 import Reply from './Reply'
+import EditComment from './Edit'
 
 export default {
     name: 'CommentsTree',
@@ -53,7 +54,7 @@ export default {
     data() {
         return {}
     },
-    components: { Reply },
+    components: { Reply, EditComment },
     computed: {
         ...mapState({
             logined_user: state => state.user.profile,
@@ -67,9 +68,6 @@ export default {
     methods: {
         logined() {
             return Object.keys(this.logined_user).length > 0;
-        },
-        toggleEdit(comment_id) {
-            console.log('editor toggle')
         },
         deleteComment(comment_id) {
             console.log('delete comment id: '+ comment_id)
@@ -98,7 +96,8 @@ export default {
             
         }),
         ...mapMutations({
-            toggleReply: 'comments/toggleReply'
+            toggleReply: 'comments/toggleReply',
+            toggleEdit: 'comments/toggleEdit',
         })
     },
 }

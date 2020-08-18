@@ -73,7 +73,9 @@ class CommentController extends Controller
                 $comment->content = $request->content;
                 $comment->save();
 
-                return response()->json($comment, 200);
+                $comment = Comment::where('id', $request->comment_id)->with('user')->get();
+
+                return response()->json($comment[0], 200);
             } 
         }
         throw new AuthorizationException();
