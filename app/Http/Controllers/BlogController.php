@@ -124,7 +124,7 @@ class BlogController extends Controller
             // WHERE `user_community`.`community_id` IN (52, 56, 58, 59, 61, 63, 65, 76)
             //     and `user_id` = 1
 
-            $blogs = Blog::limit(50)->with(['user', 'community'=> function ($query) {
+            $blogs = Blog::withTrashed()->limit(50)->with(['user', 'community'=> function ($query) {
                 // get the communities  and  its joined status with the request user joined
                 $query->with(['user'=> function($query) {
                     $query->where('user_id', Auth::id());

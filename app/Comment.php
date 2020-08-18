@@ -56,15 +56,6 @@ class Comment extends Model
         return $this->belongsTo('App\User', 'user_id');
     }
 
-    public function getByBlogId($blog_id)
-    {
-        $comments = Comment::select(
-            ['id', 'content', 'created_at', 'blog_id', 'parent_id', 'user_id', 'deleted_at']
-        )->where('blog_id', $blog_id)->with(['user'])->get();
-
-        return $comments;
-    }
-
     public function getContentAttribute($value)
     {
         if ($this->attributes['deleted_at']) {
@@ -83,7 +74,8 @@ class Comment extends Model
             ['html_input' => 'strip', 'allow_unsafe_links' => false],
             $environment
         );
-
-        return $commonMark->convertToHtml($this->attributes['content']);
+        $content = $this->attributes['content'];
+        $content = $this->getContentAttribute($content);
+        return $commonMark->convertToHtml($content);
     }
 }

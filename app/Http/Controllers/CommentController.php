@@ -27,8 +27,8 @@ class CommentController extends Controller
     public function show(Request $request)
     {
         $blog_id = $request->blog_id;
-        $blog = Blog::where('id', $blog_id)->with(['comment'=> function($query){
-            $query->where('parent_id', null)->with(['allChildren', 'user']);
+        $blog = Blog::withTrashed()->where('id', $blog_id)->with(['comment'=> function($query){
+            $query->withTrashed()->where('parent_id', null)->with(['allChildren', 'user']);
         }, 'user'])->get();
         \Debugbar::info($blog[0]->toArray());
         // \Debugbar::info($blog[0]->img_path);
@@ -44,8 +44,9 @@ class CommentController extends Controller
     public function index(Request $request)
     {
         $blog_id = $request->blog;
-        $commentModel = new Comment();
-        $comments = $commentModel->getByBlogId($blog_id);
+        $comments = Comment::withTrashed()->select(
+            ['id', 'content', 'created_at', 'blog_id', 'parent_id', 'user_id', 'deleted_at']
+        )->where('blog_id', $blog_id)->with(['user'])->get();
         \Debugbar::info($comments->toArray());
         return response()->json($comments, 200);
     }

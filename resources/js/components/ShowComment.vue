@@ -5,7 +5,7 @@
                 <b-card style="width:100%">
                     <b-card-title>{{ card.title }} <small style="font-size:60%">• Posted by {{ card.user ? card.user.name : '' }} • {{timeFormatter(card.created_at)}}</small></b-card-title>
                     <b-card-text v-html="card.markdown_content?card.markdown_content:''"></b-card-text>
-                    <b-card-img-lazy v-show="card.img_path?card.img_path:''" :src="card.img_path?card.img_path:''"></b-card-img-lazy>
+                    <b-card-img-lazy v-show="card.img_path && !card.deleted_at" :src="card.img_path?card.img_path:''"></b-card-img-lazy>
                     <div v-show="logined()">
                         <b-button size="sm" @click="editBlog" v-show="canEdit()">Edit</b-button>
                         <b-button size="sm" @click="deleteBlog(form.blog_id)" v-show="canDelete()">Delete</b-button>
@@ -81,7 +81,9 @@ export default {
                 },
                 title: '',
                 content: '',
+                img_path: '',
                 created_at: '',
+                deleted_at: '',
             },
             treeData: {},
             form: {
