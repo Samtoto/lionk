@@ -16,7 +16,7 @@ class Comment extends Model
 
     public $markdownAccessor = true;
 
-    private $_DELETED_TEXT = 'The comment has been removed.';
+    private $_DELETED_TEXT = '_The comment has been removed._';
 
     public function blog()
     {
