@@ -1,4 +1,4 @@
-import { getCommentsByBlogId, createSubComment } from '../../server/api';
+import { getCommentsByBlogId, createSubComment, deleteComment } from '../../server/api';
 
 
 const recursiveFind = function (comments, id) {
@@ -64,6 +64,12 @@ const actions = {
         createSubComment(comment).then(response => {
             commit('replyComment', response.data)
         })
+    },
+    delete({ commit }, comment_id) {
+        deleteComment(comment_id).then(response => {
+            console.log(response.data)
+            commit('updateComment', response.data)
+        })
     }
 }
 
@@ -92,6 +98,10 @@ const mutations = {
         } else {
             state.all.push(comment)
         }
+    },
+    updateComment(state, comment) {
+        let commentSearch = recursiveFind(state.all, comment.id)
+        commentSearch = comment
     }
 }
 

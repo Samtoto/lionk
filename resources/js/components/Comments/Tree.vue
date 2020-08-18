@@ -69,6 +69,26 @@ export default {
         },
         deleteComment(comment_id) {
             console.log('delete comment id: '+ comment_id)
+            this.$bvModal.msgBoxConfirm('Please confirm that you want to delete the comment.', {
+                title: 'Please Confirm',
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'YES',
+                cancelTitle: 'NO',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+            .then(value => {
+                if (value) {
+                    this.$store.dispatch('comments/delete', comment_id)
+                }
+            })
+            .catch(err => {
+                // An error occurred
+            })
+
         },
         ...mapActions({
             

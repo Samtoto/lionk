@@ -104,8 +104,8 @@ class CommentController extends Controller
             if (Gate::allows('delete-comments', $comment)) {
                 
                 $comment->delete();
-
-                return response()->json($request->comment_id, 200);
+                $comment = Comment::withTrashed()->find($request->comment_id);
+                return response()->json($comment, 200);
             }
         }
         throw new AuthorizationException();
