@@ -22,9 +22,9 @@
                         <!-- Reply button -->
                         <b-button size="sm" @click="toggleReply(comment.id)" variant="primary" v-show="logined()">reply</b-button>
                         <!-- Edit button -->
-                        <b-button size="sm" @click="toggleEdit(comment.id)" variant="warning" v-show="logined() && comment.user && logined_user.id==comment.user.id">Edit</b-button>
+                        <b-button size="sm" @click="toggleEdit(comment.id)" variant="warning" v-show="canEdit(comment)">Edit</b-button>
                         <!-- Delete button -->
-                        <b-button size="sm" variant="danger" @click="deleteComment(comment.id)" v-show="logined() && comment.user && logined_user.id==comment.user.id">Delete</b-button>
+                        <b-button size="sm" variant="danger" @click="deleteComment(comment.id)" v-show="canDelete(comment)">Delete</b-button>
                         <!-- Not login, login button -->
                         <b-button size="sm" variant="primary" v-show="!logined()" to="/login">Login</b-button>
                         <!-- Not login, register button -->
@@ -68,6 +68,16 @@ export default {
     methods: {
         logined() {
             return Object.keys(this.logined_user).length > 0;
+        },
+        canEdit(comment) {
+            // logined and
+            // logined user is the owner and
+            // not deleted
+            return this.logined() && comment.user && this.logined_user.id==comment.user.id && !comment.deleted_at
+        },
+        canDelete(comment) {
+            // same as canEdit
+            return this.logined() && comment.user && this.logined_user.id==comment.user.id && !comment.deleted_at
         },
         deleteComment(comment_id) {
             console.log('delete comment id: '+ comment_id)
