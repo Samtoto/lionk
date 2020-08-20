@@ -131,7 +131,7 @@ class BlogController extends Controller
                 }]);
             }])->withCount('comment')->get();
         } else {
-            $blogs = Blog::limit(50)->with(['user', 'community' => function ($query) {
+            $blogs = Blog::withTrashed()->limit(50)->with(['user', 'community' => function ($query) {
                 // need user attr
                 $query->with(['user' => function ($query) {
                     $query->where('user_id', '0');

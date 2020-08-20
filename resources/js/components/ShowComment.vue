@@ -8,27 +8,10 @@
                     <b-card-img-lazy v-show="card.img_path && !card.deleted_at" :src="card.img_path?card.img_path:''"></b-card-img-lazy>
                     <div v-show="logined()">
                         <b-button size="sm" @click="editBlog" v-show="canEdit()">Edit</b-button>
-                        <b-button size="sm" @click="deleteBlog(form.blog_id)" v-show="canDelete()">Delete</b-button>
+                        <b-button size="sm" @click="del(form.blog_id)" v-show="canDelete()">Delete</b-button>
                         <hr />
                         <p>Comment as {{ logined_user.name }}</p>
                         <Reply :comment_id="null"></Reply>
-                        <!-- <b-card no-body>
-                            <b-tabs card>
-                                <b-tab title="Edit" active>
-                                    <b-form-textarea
-                                        id="content"
-                                        v-model.trim="form.comment"
-                                        placeholder="Enter something..."
-                                        rows="3"
-                                        max-rows="6"
-                                    ></b-form-textarea>
-                                </b-tab>
-                                <b-tab title="Preview">
-                                    <b-card-text v-html="marked(form.comment?form.comment:'')"></b-card-text>
-                                </b-tab>
-                            </b-tabs>
-                        </b-card>
-                        <b-button block variant="outline-primary">Comment</b-button> -->
                     </div>
                     <div v-show="!logined()">
                         <b-card-text><p style="text-align:left;color: gray"><br />Wanna reply a comment?<br />
@@ -131,10 +114,34 @@ export default {
             return this.canDelete(); // same as canDelete()
         },
         canDelete: function() {
-            if (this.logined_user.id == this.card.user.id && !this.card.deleted_at) {
+            if (this.card.user && this.logined_user.id == this.card.user.id && !this.card.deleted_at) {
                 return true;
             }
             return false;
+        },
+        del(blog_id) {
+            this.$bvModal.msgBoxConfirm('Please confirm that you want to delete the blog.', {
+                title: 'Please Confirm',
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'YES',
+                cancelTitle: 'NO',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+            .then(value => {
+                if (value) {
+                    deleteBlog(blog_id).then(response => {
+                        this.card = response.data
+                    })
+                }
+            })
+            .catch(err => {
+                // An error occurred
+            })
+            
         }
     },
     created () {
