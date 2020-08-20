@@ -131,7 +131,7 @@ export default {
             return this.canDelete(); // same as canDelete()
         },
         canDelete: function() {
-            if (this.logined_user.id == this.card.user.id) {
+            if (this.logined_user.id == this.card.user.id && !this.card.deleted_at) {
                 return true;
             }
             return false;
