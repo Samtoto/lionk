@@ -67,7 +67,8 @@ class BlogController extends Controller
         // return $request->input('title');
         $user = Auth::user();
         $blog = new Blog;
-
+        $blog->deleted_at = null;
+        $blog->content = null;
         $blog->title = $request->title_img;
 
         // $blog->content = Purifier::clean($request->content);
