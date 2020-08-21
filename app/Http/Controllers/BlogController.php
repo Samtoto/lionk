@@ -37,6 +37,7 @@ class BlogController extends Controller
 
         $blog->content = $request->content;
         $blog->community_id = $request->community;
+        $blog->deleted_at = null;
         // $blog->save();
         $user->blog()->save($blog);
 
