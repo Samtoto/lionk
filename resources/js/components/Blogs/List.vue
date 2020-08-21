@@ -12,7 +12,7 @@
                     <JoinButton :communityId="card.community.id"></JoinButton>
                 </small>
             </b-card-header>
-            <b-card-body>
+            <b-card-body style="max-height:40rem; overflow:hidden;-webkit-mask-image: linear-gradient(180deg,rgb(0 0 0) 60%,rgb(0 0 0 / 0%)); mask-image: linear-gradient(180deg,#000 60%,transparent);">
                 <b-card-title>{{ card.title}} </b-card-title>
                 <b-card-img-lazy v-show="card.img_path && !card.deleted_at" :src="card.img_path?card.img_path:''"></b-card-img-lazy>
                 <b-card-text v-html="card.markdown_content?card.markdown_content:''"></b-card-text>
@@ -67,3 +67,9 @@ export default {
 }
 
 </script>
+<style scoped>
+b-card-body {
+    overflow: hidden;
+    max-height: 20rem;
+}
+</style>
