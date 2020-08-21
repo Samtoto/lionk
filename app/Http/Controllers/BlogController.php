@@ -18,7 +18,7 @@ class BlogController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function add(Request $request)
+    public function create(Request $request)
     {
         \Debugbar::info($request->input());
 
@@ -52,7 +52,7 @@ class BlogController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function addImg(Request $request)
+    public function createImg(Request $request)
     {
         \Debugbar::info($request->input());
 
@@ -90,12 +90,12 @@ class BlogController extends Controller
     }
 
     /**
-     * Get all blogs with relationships (users, community)
+     * Get blogs list with relationships (users, community)
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function all(Request $request)
+    public function index(Request $request)
     {
 
         if (Auth::check()) {
@@ -160,14 +160,14 @@ class BlogController extends Controller
     public function show(Request $request)
     {
         
-        return view('comment_show', ['blog_id' => $request->blog_id]);
+        return view('comment.show', ['blog_id' => $request->blog]);
     }
 
     public function edit(Request $request)
     {
         if (Auth::check()) {
 
-            $blog = Blog::where('id', $request->blog_id)->with('community')->get();
+            $blog = Blog::where('id', $request->blog)->with('community')->get();
             if (Gate::allows('edit-blogs', $blog[0])) {
                 // $blog->content = base64_decode($blog->content);
                 if ($blog[0]->img_path) {
@@ -183,11 +183,11 @@ class BlogController extends Controller
         // return 'Error on edit blog: ' . $request->blog_id;
     }
 
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
         if (Auth::check()) {
 
-            $blog = Blog::find($request->blog_id);
+            $blog = Blog::find($request->blog);
             if (Gate::allows('delete-blogs', $blog)) {
                 // $blog->content = base64_decode($blog->content);
                 $blog->delete();
@@ -204,7 +204,7 @@ class BlogController extends Controller
     public function update(Request $request) {
         if (Auth::check()) {
 
-            $blog = Blog::find($request->blog_id);
+            $blog = Blog::find($request->blog);
                 // \Debugbar::info($blog->toArray());
             if (Gate::allows('update-blogs', $blog)) {
                 // $blog->content = base64_decode($blog->content);

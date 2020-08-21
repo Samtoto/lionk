@@ -16,9 +16,9 @@ class CommunityController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function changeStatus(Request $request)
+    public function subscribe(Request $request)
     {
-        $community_id = $request->community_id;
+        $community_id = $request->community;
         $user = Auth::user();
 
         $community = Community::find($community_id);
@@ -46,7 +46,7 @@ class CommunityController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function all(Request $request)
+    public function index(Request $request)
     {
         // get all communities
         // and with user relation

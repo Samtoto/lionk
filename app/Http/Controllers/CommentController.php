@@ -26,7 +26,7 @@ class CommentController extends Controller
      */
     public function show(Request $request)
     {
-        $blog_id = $request->blog_id;
+        $blog_id = $request->blog;
         $blog = Blog::withTrashed()->where('id', $blog_id)->with(['comment'=> function($query){
             $query->withTrashed()->where('parent_id', null)->with(['allChildren', 'user']);
         }, 'user'])->get();
@@ -54,7 +54,7 @@ class CommentController extends Controller
     public function edit(Request $request)
     {
         if (Auth::check()) {
-            $comment = Comment::find($request->comment_id);
+            $comment = Comment::find($request->comment);
             if (Gate::allows('edit-comments', $comment)) {
                 return response()->json($comment, 200);
             }
@@ -65,7 +65,7 @@ class CommentController extends Controller
     public function update(Request $request)
     {
         if (Auth::check()) {
-            $comment = Comment::find($request->comment_id);
+            $comment = Comment::find($request->comment);
             if (Gate::allows('update-comments', $comment)) {
                 $validatedData = $request->validate([
                     'content'=> 'required'
@@ -73,7 +73,7 @@ class CommentController extends Controller
                 $comment->content = $request->content;
                 $comment->save();
 
-                $comment = Comment::where('id', $request->comment_id)->with('user')->get();
+                $comment = Comment::where('id', $request->comment)->with('user')->get();
 
                 return response()->json($comment[0], 200);
             } 
@@ -91,22 +91,22 @@ class CommentController extends Controller
     {
         $comment = new Comment;
         $comment->user_id = Auth::id();
-        $comment->parent_id = $request->comment_id;
+        $comment->parent_id = $request->comment;
         $comment->content = $request->comment;
-        $comment->blog_id = $request->blog_id;
+        $comment->blog_id = $request->blog;
         $comment->save();
         // TODO should return the success one
         return $this->show($request);
     }
 
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
         if (Auth::check()) {
-            $comment = Comment::find($request->comment_id);
+            $comment = Comment::find($request->comment);
             if (Gate::allows('delete-comments', $comment)) {
                 
                 $comment->delete();
-                $comment = Comment::withTrashed()->where('id', $request->comment_id)->with('user')->get();
+                $comment = Comment::withTrashed()->where('id', $request->comment)->with('user')->get();
                 return response()->json($comment[0], 200);
             }
         }
@@ -119,7 +119,7 @@ class CommentController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function addSub(Request $request)
+    public function create(Request $request)
     {
         \Debugbar::info($request->input());
         $comment = new Comment;

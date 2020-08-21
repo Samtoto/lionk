@@ -19,39 +19,39 @@ use Illuminate\Http\Request;
 
 Route::prefix('blog')->group(function () {
 
-    Route::get('/add', function () {
-        return view('add');
+    Route::get('/create', function () {
+        return view('blog.create');
     })->middleware('auth');
-    Route::post('/add', 'BlogController@add');
-    Route::post('/addImg', 'BlogController@addImg');
-    Route::get('/all', 'BlogController@all');
+    Route::post('/create', 'BlogController@create');
+    Route::post('/createImg', 'BlogController@createImg');
+    Route::get('/index', 'BlogController@index');
 
-    Route::get('/show/{blog_id}', 'BlogController@show')->where(['blog_id' => '[0-9]+']);
-    Route::get('/{blog_id}/edit', 'BlogController@edit')->where(['blog_id' => '[0-9]+']);
-    Route::put('/{blog_id}', 'BlogController@update')->where(['blog_id' => '[0-9]+']);
-    Route::delete('/{blog_id}', 'BlogController@delete')->where(['blog_id' => '[0-9]+']);
+    Route::get('/{blog}', 'BlogController@show')->where(['blog' => '[0-9]+']);
+    Route::get('/{blog}/edit', 'BlogController@edit')->where(['blog' => '[0-9]+']);
+    Route::put('/{blog}', 'BlogController@update')->where(['blog' => '[0-9]+']);
+    Route::delete('/{blog}', 'BlogController@destroy')->where(['blog' => '[0-9]+']);
 
     Route::get('/{blog}/comment', 'CommentController@index')->where(['blog' => '[0-9]+']);
 });
 
 Route::prefix('comment')->group(function () {
-    Route::get('/show/{blog_id}', 'CommentController@show')->where(['blog_id' => '[0-9]+']);
-    Route::post('/add', 'CommentController@add');
-    Route::post('/add_sub', 'CommentController@addSub');
-    Route::get('/{comment_id}/edit', 'CommentController@edit')->where(['comment_id' => '[0-9]+']);
-    Route::put('/{comment_id}', 'CommentController@update')->where(['comment_id' => '[0-9]+']);
-    Route::delete('/{comment_id}', 'CommentController@delete')->where(['comment_id' => '[0-9]+']);
+    Route::get('/show/{blog}', 'CommentController@show')->where(['blog' => '[0-9]+']);
+    // Route::post('/add', 'CommentController@add');
+    Route::post('/create', 'CommentController@create');
+    Route::get('/{comment}/edit', 'CommentController@edit')->where(['comment' => '[0-9]+']);
+    Route::put('/{comment}', 'CommentController@update')->where(['comment' => '[0-9]+']);
+    Route::delete('/{comment}', 'CommentController@destroy')->where(['comment' => '[0-9]+']);
 });
 
 Route::prefix('community')->group(function () {
     Route::get('/', function () {
-        return view('communities');
+        return view('community.index');
     })->name('communities');
 
-    Route::get('/change_status/{community_id}', 'CommunityController@changeStatus')->where(['community_id', '[0-9]+'])->middleware('auth');
-    Route::get('/all', 'CommunityController@all');
+    Route::get('/{community}/subscribe', 'CommunityController@subscribe')->where(['community', '[0-9]+'])->middleware('auth');
+    Route::get('/index', 'CommunityController@index');
     Route::get('/my', 'CommunityController@my');
-    Route::get('/{community_id}', 'CommunityController@show')->where(['community_id', '[0-9]+']);
+    Route::get('/{community}', 'CommunityController@show')->where(['community', '[0-9]+']);
 });
 
 Route::prefix('user')->group(function () {
@@ -59,7 +59,7 @@ Route::prefix('user')->group(function () {
 });
 
 Route::get('/', function() {
-    return view('show');
+    return view('blog.index');
 })->name('blogs');
 
 Auth::routes();

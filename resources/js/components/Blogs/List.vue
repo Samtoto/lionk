@@ -56,7 +56,7 @@ export default {
         //     'getByCommunityId'
         // ]),
         reply: function(id) {
-            window.location.href = "/blog/show/" + id
+            window.location.href = "/blog/" + id
         }
         
     },

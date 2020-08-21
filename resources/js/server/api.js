@@ -28,19 +28,19 @@ axios.interceptors.response.use(function (response) {
 /* blog */
 
 export const getAllBlogs = data => axios({
-    url: '/blog/all',
+    url: '/blog/index',
     method: 'get',
     data
 });
 
 export const createBlog = data => axios({
-    url: '/blog/add',
+    url: '/blog/create',
     method: 'post',
     data
 })
 
 export const createImageBlog = data => axios({
-    url: '/blog/addImg',
+    url: '/blog/createImg',
     method: 'post',
     data,
     headers: {
@@ -50,14 +50,14 @@ export const createImageBlog = data => axios({
     }
 })
 
-export const updateCommonBlog = (blog_id, data) => axios({
-    url: '/blog/' + blog_id,
+export const updateCommonBlog = (blog, data) => axios({
+    url: '/blog/' + blog,
     method: 'put',
     data
 })
 
-export const updateImageBlog = (blog_id, data) => axios({
-    url: '/blog/' + blog_id,
+export const updateImageBlog = (blog, data) => axios({
+    url: '/blog/' + blog,
     method: 'post',
     _method: 'put',
     data: data,
@@ -68,8 +68,8 @@ export const updateImageBlog = (blog_id, data) => axios({
     }
 })
 
-export const deleteBlog = (blog_id, data) => axios({
-    url: '/blog/' + blog_id,
+export const deleteBlog = (blog, data) => axios({
+    url: '/blog/' + blog,
     method: 'delete',
     data
 })
@@ -77,14 +77,14 @@ export const deleteBlog = (blog_id, data) => axios({
 
 /* community */
 
-export const joinCommunityToggle = (community_id, data={}) => axios({
-    url: '/community/change_status/' + community_id,
+export const joinCommunityToggle = (community, data={}) => axios({
+    url: '/community/' + community + '/subscribe',
     method: 'get',
     data
 })
 
 export const getALlCommunity = data => axios({
-    url: '/community/all',
+    url: '/community/index',
     method: 'get',
     data
 })
@@ -99,43 +99,43 @@ export const getMyCommunity = data => axios({
 /* comment */
 
 export const createComment = data => axios({
-    url: '/comment/add',
+    url: '/comment/create',
     method: 'post',
     data
 })
 
-export const showComment = (blog_id, data={}) => axios({
-    url: '/comment/show/' + blog_id,
+export const showComment = (blog, data={}) => axios({
+    url: '/comment/show/' + blog,
     method: 'get',
     data
 })
 
-export const getCommentsByBlogId = (blog_id, data={}) => axios({
-    url: `/blog/`+blog_id+`/comment`,
+export const getCommentsByBlogId = (blog, data={}) => axios({
+    url: `/blog/`+blog+`/comment`,
     method: 'get',
     data
 })
 
 export const createSubComment = data => axios({
-    url: '/comment/add_sub',
+    url: '/comment/create',
     method: 'post',
     data
 })
 
-export const editComment = (comment_id, data={}) => axios({
-    url: '/comment/' + comment_id + '/edit',
+export const editComment = (comment, data={}) => axios({
+    url: '/comment/' + comment + '/edit',
     method: 'get',
     data
 })
 
-export const deleteComment = (comment_id, data={}) => axios({
-    url: '/comment/' + comment_id,
+export const deleteComment = (comment, data={}) => axios({
+    url: '/comment/' + comment,
     method: 'delete',
     data
 })
 
-export const updateComment = (comment_id, data) => axios({
-    url: '/comment/' + comment_id,
+export const updateComment = (comment, data) => axios({
+    url: '/comment/' + comment,
     method: 'put',
     data
 })

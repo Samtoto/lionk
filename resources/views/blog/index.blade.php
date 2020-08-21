@@ -3,7 +3,7 @@
 @section('content')
 
 <div id="app">
-    <show-blog></show-blog>
+    <blog-index></blog-index>
 </div>
 
 @endsection
