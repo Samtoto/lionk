@@ -13,10 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-use App\Community;
-use App\Comment;
-use Illuminate\Http\Request;
-
 Route::prefix('blog')->group(function () {
 
     Route::get('/create', function () {
@@ -48,10 +44,15 @@ Route::prefix('community')->group(function () {
         return view('community.index');
     })->name('communities');
 
+    Route::get('/create', function () {
+        return view('community.create');
+    })->name('communities');
+
     Route::get('/{community}/subscribe', 'CommunityController@subscribe')->where(['community', '[0-9]+'])->middleware('auth');
     Route::get('/index', 'CommunityController@index');
     Route::get('/my', 'CommunityController@my');
     Route::get('/{community}', 'CommunityController@show')->where(['community', '[0-9]+']);
+    Route::post('/create', 'CommunityController@create');
 });
 
 Route::prefix('user')->group(function () {

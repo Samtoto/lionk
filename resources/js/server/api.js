@@ -95,6 +95,12 @@ export const getMyCommunity = data => axios({
     data
 })
 
+export const createCommunity = data => axios({
+    url: 'community/create',
+    method: 'post',
+    data
+})
+
 
 /* comment */
 

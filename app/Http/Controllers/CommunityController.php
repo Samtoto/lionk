@@ -84,4 +84,9 @@ class CommunityController extends Controller
         return view('community');
     }
 
+    public function create(Request $request)
+    {
+        return __CLASS__ . '@' . __FUNCTION__;
+    }
+
 }
