@@ -65,7 +65,7 @@ Vue.component('edit-blog', require('./components/EditBlog.vue').default);
 Vue.component('add-blog', require('./components/AddBlog.vue').default);
 // Vue.component('showdown-editor', require('./components/ShowDownEditor.vue').default)
 Vue.component('show-communities', require('./components/ShowCommunities.vue').default)
-Vue.component('community', require('./components/Community.vue').default);
+// Vue.component('community', require('./components/Community.vue').default);
 
 
 /**
