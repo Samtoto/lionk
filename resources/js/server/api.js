@@ -96,9 +96,14 @@ export const getMyCommunity = data => axios({
 })
 
 export const createCommunity = data => axios({
-    url: 'community/create',
+    url: '/community/create',
     method: 'post',
-    data
+    data,
+    headers: {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }
 })
 
 

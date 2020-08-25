@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Community;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class CommunityController extends Controller
 {
@@ -86,7 +88,36 @@ class CommunityController extends Controller
 
     public function create(Request $request)
     {
-        return __CLASS__ . '@' . __FUNCTION__;
+        if (Auth::check()) {
+            if (Gate::allows('create-community')) {
+
+                $request->validate([
+                    'name' => ['required', 'max:255', 'unique:communities'],
+                    'description' => ['required'],
+                    'avatar' => 'nullable|image',
+                    'banner' => 'nullable|image',
+                    'theme_color' => ['max:6'],
+                ]);
+
+                $community = new Community;
+
+                if ($request->file('avatar')) {
+                    $avatar_path = $request->file('avatar')->store('images', 'public_uploads');
+                    $community->avatar_path = $avatar_path;
+                }
+                if ($request->file('banner')) {
+                    $banner_path = $request->file('banner')->store('images', 'public_uploads');
+                    $community->banner_path = $banner_path;
+                }
+
+                $community->name = $request->name;
+                $community->description = $request->description;
+                $community->theme_color = $request->theme_color;
+                $community->save();
+                \Debugbar::info($community->toArray());
+                return response()->json($community, 200);
+            }
+        }
     }
 
 }

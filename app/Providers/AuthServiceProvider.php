@@ -49,6 +49,11 @@ class AuthServiceProvider extends ServiceProvider
             return $user->id === $comment->user_id;
         });
 
+        Gate::define('create-community', function ($user) {
+            // todo user.coins >? 50
+            return true;
+        });
+
         //
     }
 }
