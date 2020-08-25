@@ -46,7 +46,7 @@ Route::prefix('community')->group(function () {
 
     Route::get('/create', function () {
         return view('community.create');
-    })->name('communities');
+    });
 
     Route::get('/{community}/subscribe', 'CommunityController@subscribe')->where(['community', '[0-9]+'])->middleware('auth');
     Route::get('/index', 'CommunityController@index');
